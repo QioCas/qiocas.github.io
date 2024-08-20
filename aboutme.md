@@ -4,13 +4,33 @@ title: About me
 subtitle: Why you'd want to go on a date with me
 ---
 
-My name is Inigo Montoya. I have the following qualities:
+**Info**: [![Facebook Badge][1]](https://www.facebook.com/QioCas)
+[![Github Badge][2]](https://github.com/QioCas)
+[![Twitter Badge][3]](https://twitter.com/loai_u)
+[![Youtube][4]](https://www.youtube.com/@user-uv8pf3wy1d/videos)
 
-- I rock a great mustache
-- I'm extremely loyal to my family
+**OJ**: [![Codeforces Badge][5]](https://codeforces.com/profile/mahimero2006)
+[![AtCoder Badge][6]](https://atcoder.jp/users/mahimero2006)
+[![VNOJ Badge][7]](https://oj.vnoi.info/user/QioCass)
+[![LQDOJ Badge][8]](https://lqdoj.edu.vn/user/QioCas)
+[![TLEOJ Badge][9]](https://tleoj.edu.vn/user/MoonLunalight)
+[![IUH Badge][10]](https://oj.iuhcoder.com/user/MoonLunaLight)
+
 
 What else do you need?
 
 ### My story
 
 To be honest, I'm having some trouble remembering right now, so why don't you just watch [my movie](https://en.wikipedia.org/wiki/The_Princess_Bride_%28film%29) and it will answer **all** your questions.
+
+  [1]:https://shields.io/badge/Facebook-Ch%C3%A2u%20Qu%E1%BB%B3nh-blue?logo=facebook&style=plastic
+  [2]:https://shields.io/badge/Github-QioCas-black?logo=github&style=plastic
+  [3]:https://shields.io/badge/Twitter-QioCas-black?logo=x&style=plastic
+  [4]:https://shields.io/badge/Youtube-QioCas-red?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAwklEQVR4AWNwL/ChKx6GFo5a+J+BQRmIfYE4HYgrgLgLiOdA8VqsGCHfBdWTDjVDGaeFQElmIL4CxP+pjK/gsnA7SAGN8FpsFv6nJUaxECggSmsLQXYgW2hOlKbs7P//7ezItVAf2UJfojTNnv0fDNauJcdCX2QLo0iwEAHa2si2MJ1ECxHg1StIUBPWH0V3C+kepOQnmi1byE809M8W9M/49C/a6F940796wqyAo/BUvtuRMZ5KOApk1mibhmI8aiEAWJrZd6IgmiUAAAAASUVORK5CYII=
+
+  [5]:http://mosesxu.ca/judge-badge/codeforces/mahimero2006
+  [6]:http://mosesxu.ca/judge-badge/atcoder/mahimero2006
+  [7]: https://shields.io/badge/VNOJ-2055-purple?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAASFBMVEVHcEz/nwDNLycqkra/JSb/oACyGibMLyYivW/MLScYc9//nwDMLyf/nwAlsoT/nwDMLictdNzMLyb/nwCyGyawGSYsf8+xGSSsl0AJAAAAF3RSTlMA9sz+/Rb7+f038LLCvP2p0v///////hszFUIAAAB3SURBVBiVVc1ZDgMhDANQB0ghszfTofe/aQNBlfCfnxzAptmiIb08EO2RnJ5PC7C1HpDVBT4RAxf0SUCDLugTcWhigHBhgKZvA5E/aAJ4J9oZ7xHw3cOjV6wO6+IQ4f2mAQdogljmk1rK9GgsBuCT6LRvazyslx97+gyXkhGq1AAAAABJRU5ErkJggg==&style=plastic
+  [8]:https://shields.io/badge/LQDOJ-2099-purple?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAFUUlEQVR4Ab1WBXAaWxR9310J9TYC34Lu4knd3d0tUqGBumdHv7vhRCB1d3d3l4Vo3d1b/n3MvgxDF8pP5cxc5Nk5194uihWFw76J92dJzIVm6SK/SVpWaJI+AQt4GlABq4GuqN19JnGxSWbwZ0mXANljTBhuufUqLgBbROJjw74WgMfeIs5TbK9MgN8sVYPXZYTklQrwDU9uWJglvR0LOba8+i9QAGuS03DorWiEfpPkcJFJ8h1YD0hP/UWtlfVnN6d6rOmq+G5HP/nh3QNlAT5b1kERXUCRSfkpEBRHJM6SbPKZJKnoGcBrCk2STeH7t/eVRRcAreWMQP4IUjIKVr6GYgReC+06Cu+NSQBrTKaK+NvsEQ41qiD8I5J7EhFRBcCCmfz5lk5ABDO7vBErcTVr+vuIA0RvYlQBZ42UEBY84BGwK8Cg14WOQWKBI31BnCPdB9/tozIzzOtC5+BBsPYc2AahO02Jz4CW3h1RAHg5kM97nym5BQII7YNbwmF+sABnqz+zpsvCuT9zDEqFud0h6/bHudLqIUAxnBVRAJDl8QgoCQRCiu4P4zsCe/p4OPRG8HB7+kOBI+Pvj3KHCT63D64RZ08riHOkPeGIL8bZ0jJDU8ZAFLb0lpVEEnDgaQESO9lc4pV9xnqovJMeaocjr2EbgSPNDSSPMRmIugLft4go+P97fJuJLUS67CNg88TUBCE5Z0UnuYNfgFl6hScCRrLR56EtrIcOBM2rbHcsh1aNyGk3AMi2YGKOfHWtLuN+E6mnpCboprYD8gC2JF22k5wzq4XCyCuAN/9Z0m5k40kPfRyTw3fRiVyFFotg8+lTh92aKkDes+oI089J2ux9mBCTx6unUCLd1KOciBPkHFdtqge/AJ7+95uTe5KNQH40KCCP/iYYES+tgv+PIC2zEAC8LOLI/PH6ycE1IgMjDo5ppx4m59hSqD7h5LYU+hEWcD5cAPTumBAB08ECBzzyGiFjf+ExNldNEQE1VZNFZD5JlV0rmALtVA8Z+1dPT3o6AtR5ECDZHi4AbsXpZCOEvEuQzKMaSsZO5FOKYFTy6d+IgATl+IRyATrGhMfEkBIyBoTzwgXYU+htCMj+4amDq6xR/A4CrGPqv8nmUycg5OeL81VVEeAofGMBUAvbwwVg72HsMtTBQWjA1xHg7/rJHwLhzXABjhT6b1RslnbgK8RiuKDKo5BH1Qvm3Uu7oB2NPo+qgBPgK68BNSONV02synXB/QT9FB3ZbzGosvgK0Fmb7oDKzDXegzRcDxeA34iOj/3qI3IIhDsDOsENAn7H5JwtEmkZH5fvW2I90zVBwzRP0jLlRfyXVisAsvM84b8202B4jzyKf4vwDuBFIY9hv0ep8XmUaRz5RTZfRUOoT5K+T9QxnVEIGIRet+rpBbze16F/RQQnzIrqUAu3eaIQgBvsByKC4Pg0qhq7VPwO14bHRNrsEpFuSvfQdTMResOip/7lI4f2uz2tCVUNhQI/esPJF7XlXqP01Oy/tF8LEA/A6941DOb3QsfsOmllm161hI8cm7suNR6FAaodvQm1sJGQL2zDkRPT0xfhewzOKYoAVx1KCOsmwrqrkcgdqfTGmV0Q/7sFXECVQQBLyCPYA4uB3ghR+R2TYYNQ/2ExUJth7mGUfbjw2IJG0sooGvYO+iYeFrN4w4s0uIpPuupqaqJYYFWp4uCaXPWiyO2p1KrcRpC6WEFaCDYPB7taca/pK3DZDMNnoYrCXV/5KYRvMuS6NGbyFLoU73ErlZ+iFwXshSWFMuCisxmoWZCinVCMfmzwf4cFj8EcXvN/PP4Pp1zp+cH6tAMAAAAASUVORK5CYII=&style=plastic
+  [9]:https://shields.io/badge/TLEOJ-1658-blue?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAABaklEQVR4Ae3UA2wkYQCG4Y3vorNt27bNGmFtm0Edo7Zt27bdBrXdzt/9atvtJu+O5xnTPgh/XdG2wC1wfm2BPVkSKd2ZYtR00ZfrYb3cn/8q6ZHhuJkVds4bbEsTPdWXI0lmy3Pbng8j2K//GXm/GUIXc4Z6vVmigWgY6M2WqB6eR4oEf9rc/vA76c0ngpwvXru3ZPewO42T4DJS6QyWmL4cQJRoluVncIYRD58TBByXc8lABPCmb6/hx6B2CgH0v36HjC3w8PHjCwbpv3sYdiZ8IYgkXDA9bF3v8NCpmkIAnY+fIcj90g0j1/NXJbD+osH2mEfjwEsG+WQiuBT3ECDnMIgA0rRy7QGisSDODuiSneFY8KBmIkG4X8DGtth7+GkSKB1vvlspnCA8qWwM6r8VPvFLy30WlMGTivWXDUTbVaLGtrAvzcRaIh/qtkQ9JFTM4Rc06ehfA5hiWNfkQivW9sd7C9wCt8B+sHbXbH0aQGcAAAAASUVORK5CYII=&style=plastic
+  [10]: https://shields.io/badge/IUHcoder-2622-red?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAFkUlEQVR4Ae2XdXTbRhzHs1fwG/OCDq/hZInDiSlgh0xyMtuxC2GmMnNrCJWZmZmZmZmZ25Pk4MhP06mzAuOVRn98DYefH0l3FgRBvPUm9cIA/wM0zJ/vYezYuccbAWicO7cdzovZDCztiLohQ2SvHaAmLa0bsGQSwNqRQN297zbOns18bQANM6c7AAcXAOycCWDvSoDPbQmjQjX5tQEYxeKZ0Hq4ORQF4uxWW6fVur1ygLpBA5nA6ctaYOdCA1CysifwxKTpLwUAlyNuuFLB+sU+sSgD2DjQG7f0QoenNf36Wr4wAMbhpKFunvex5OSfQaCR7MXAxpGgPAC/baGcCMB0JeVMGJPl8S8OEBPTC1jaQ4se4+pUOW29KIGB+vgfh5kPXN0fgnD2wmds7kzgH7gb2Lt8D6xJz8TFl70wABqfUP7cSmfKQkwo7IeXFLXBhbFtUHevi6iH9/1n6RmqJyVd+Y+y8yKe5Bfx0SRxNZWYJPyLe0AsrYbWULFlujyHCAqabywufBvj8hajSaLRTwcOjn6WX6R+rNKUgH4D40G3ngrg5vGYDIHsxQEEggHQzc2TDAJh4ZGbawtyFUCVmvesd382ru40GwsK/b6md7/EZ4WlEjJ0E3/QDv/4xatAIOhMJVbrTP+CSWDBIfuNgwcH1fXrJ3owcIjf3exCdr3eEFIzaLCcWLnE+qWUoVGtZgF75+8Bk9qYDgXq5XsX9fU731iYl7aq/3iHLE2FD4Lo3fSl41nXV26kLE/PnNgmRmzwEIh0LKFYx0pEyj83r5uaNt4StscmjWQlq8e4/SpA3dAhb6O+X51v4QUb8rcMKanPzmh3J6fwbWWX6TJfrv57f7bWFJcy4eiUObvawLmcuGoGW1BxNpSvN4VF6U1sYUWeeV3x1+PLYHswT2sSSsbstQD5BW1wQazl0xQ5C6TI/XBE9i7tBY2mT/PHLawKVCorohfTzFCE8HVEIEdLSBTjT0+ftYMB2/kJ1YzI2IqLIXw9ERoFZSgwz4mTjS2D7UE8LSGQjDlsgSpVKmBjD8gaNgEHl2/J2r6KxQqHoAX579dXVXyKfukOgK0zDYBJpSXmxRDNtJRmACdbAZynNuLqiARkTJZ5jiZjWhE53gxw0AL06fN+bX7hMPrJZn66dfA4bSwuYhmLiztS5cj8awDBPB0Rj4y5mJ43Y2NazoyNSSnjLsO2YDMA7W4EqYYZ3iLezh2AMb1LLC6M0wIrh78CAENAQQREjiT8SQVxtVQbBIhtDlA/ZTIDY3M3wzeaGQImIOroCrDMDBHKj5oMPrcjMImkm3mOVD21VQ5s/0UAOCaAPYKEGAFhaADaA3Tmjxvngnr6PoTWN4cAbl5PjYUFEbhA2AeTiOmEUnSZKYOxDGCPJAEmnJ4ye1+b5wBVNADsT5BPXF3WZ02vst5reslSp66HbUGtAGjV5OWqgRUT1jwNQR25PHxuG5VK/0faEW3MY6cuPWMZKxu3059neJheupiujvCEMTQAtJ6XUJVGhy11Ug70wq8CQOEqpRaGwgxB54Sb52OgUSe2Hl+grvq0dVuwoOqqOQThMQYaLlE+tkezMjz+iwA1Om07LChkMfWeZ7Y6cDCdTVhYxExjTDS/hhvpcq9Hz8+fipJsa8RJbCOHU9IQzOpzN0kaLYivWBsUZbgYFm24zBZWqpoeRBPSyOfC5WC+7qJQOnbhrz+Klcq3sdCw6TDzW3iC+VNeMEkYF7da1M0LYE6u36NMRxMaEroWj+J3fKpUOinEBkZwTOXbZCje5sVX0WGTKSe2i4gpfzssxvB2PDKe8btnQkwsKoKHErgpFOUFKPjbBoosTy/fgyiC8F/ZvQCXI04om90DZQWuRL19D5I6jPoFbCX/j0bj40Vo586M/y+nf1U/AphpM34nQiqkAAAAAElFTkSuQmCC&style=plastic
