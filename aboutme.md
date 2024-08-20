@@ -1,6 +1,7 @@
 ---
 layout: page
 title: About me
+cover-img: "assets/img/background.jpg"
 subtitle: Tôi là ai và bạn đang làm gì ở đây?
 ---
 
