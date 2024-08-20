@@ -200,6 +200,10 @@ img {
 .navbar-custom .navbar-brand-logo img,
 .navbar-custom.top-nav-short .navbar-brand-logo img,
 .navbar-custom.top-nav-short-permanent .navbar-brand-logo img {
+  {% unless site.round-avatar == false %}
+    border-radius: 50%;
+  {% endunless %}
+
   height: 2.5rem;
 }
 
@@ -250,6 +254,9 @@ img {
   }
 
   .navbar-custom .navbar-brand-logo img {
+    {% unless site.round-avatar == false %}
+      border-radius: 50%;
+    {% endunless %}
     height: 3.125rem;
   }
 
