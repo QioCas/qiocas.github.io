@@ -10,10 +10,10 @@
 ############################
 
 # Name of website
+title-img: "/assets/img/masha-icon.jpg"
 title: QioCas
 # Your name to show in the footer
 author: QioCas
-
 ###############################################
 # --- List of links in the navigation bar --- #
 ###############################################
