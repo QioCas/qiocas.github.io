@@ -19,7 +19,7 @@ author: QioCas
 ###############################################
 
 navbar-links:
-  Blog: "index.html"
+  Home: "index"
   About Me: "aboutme"
 
 ################
