@@ -10,7 +10,8 @@
 ############################
 
 # Name of website
-title-img: "/assets/img/masha-icon.jpg"
+title-img: "/assets/img/avatar-icon.gif"
+# title-img: "/assets/img/masha-icon.jpg"
 title: QioCas
 # Your name to show in the footer
 author: QioCas
