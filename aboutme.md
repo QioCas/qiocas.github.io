@@ -5,6 +5,14 @@ cover-img: "assets/img/background.jpg"
 subtitle: Tôi là ai và bạn đang làm gì ở đây?
 ---
 
+Chào mọi người, mình là Trần Quang Trường, sinh viên năm nhất ngành Khoa Học Máy Tính, Trường Đại học Công nghệ Thông Tin - ĐHQG-HCM.
+
+Đây là nơi mình sẽ kể về những câu chuyện xung quanh cuộc sống của bản thân.
+
+Mình rất vui khi bạn tới đây và chúc bạn có một ngày tốt lành.
+
+---
+
 **Visitors count:** ![Visitor Count](https://profile-counter.glitch.me/{QioCas}/count.svg)
 
 **Info**: [![Facebook Badge][1]](https://www.facebook.com/QioCas)
@@ -12,13 +20,6 @@ subtitle: Tôi là ai và bạn đang làm gì ở đây?
 [![Twitter Badge][3]](https://twitter.com/loai_u)
 [![Youtube][4]](https://www.youtube.com/@user-uv8pf3wy1d/videos)
 
----
-
-Chào mọi người, mình là Trần Quang Trường, sinh viên năm nhất ngành Khoa Học Máy Tính, Trường Đại học Công nghệ Thông Tin - ĐHQG-HCM.
-
-Đây là nơi mình sẽ kể về những câu chuyện xung quanh cuộc sống của bản thân.
-
-Mình rất vui khi bạn tới đây và chúc bạn có một ngày tốt lành.
 
   [1]:https://shields.io/badge/Facebook-Ch%C3%A2u%20Qu%E1%BB%B3nh-blue?logo=facebook&style=plastic
   [2]:https://shields.io/badge/Github-QioCas-black?logo=github&style=plastic
