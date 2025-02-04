@@ -37,9 +37,10 @@ body {
   position: relative;
   background-color: var(--page-col);
   background-image: url("https://i.pinimg.com/736x/cb/8b/15/cb8b151a52a5cc0a44d4e96cff314de5.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   {% if site.page-img %}
-  /* background-image: url({{ site.page-img | relative_url }}); */
-  /* background-attachment: fixed; */
+    background-image: url({{ site.page-img | relative_url }});
   {% endif %}
   overflow-wrap: break-word;
   min-height: 100vh;
