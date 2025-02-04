@@ -39,7 +39,7 @@ body {
   background-image: url("https://i.pinimg.com/736x/cb/8b/15/cb8b151a52a5cc0a44d4e96cff314de5.jpg");
   background-repeat: no-repeat;
   background-attachment: fixed;
-  background-size: auto;
+  background-size:cover;
   {% if site.page-img %}
     background-image: url({{ site.page-img | relative_url }});
   {% endif %}
