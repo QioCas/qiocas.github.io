@@ -21,7 +21,9 @@ layout: null
   --body-font: 'Lora', 'Times New Roman', serif;
   --header-font: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --mid-col: #808080;
+  filter: invert(100%);
 }
+
 
 /* --- General --- */
 
