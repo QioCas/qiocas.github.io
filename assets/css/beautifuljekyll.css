@@ -26,7 +26,7 @@ layout: null
 
 /* Light Mode */
 /* :root {
-  /* config file CSS variables */
+  config file CSS variables
   --page-col: {{ site.page-col | default: "#FFFFFF" }};
   --text-col: {{ site.text-col | default: "#404040" }};
   --link-col: {{ site.link-col | default: "#008AFF" }};
@@ -39,11 +39,12 @@ layout: null
   --footer-link-col: {{ site.footer-link-col | default: "#404040" }};
   --footer-hover-col: {{ site.footer-hover-col | default: "#0085A1" }};
 
-  /* common CSS variables */
+  common CSS variables
   --body-font: 'Lora', 'Times New Roman', serif;
   --header-font: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --mid-col: #808080;
-} */
+} 
+*/
 
 
 /* --- General --- */
