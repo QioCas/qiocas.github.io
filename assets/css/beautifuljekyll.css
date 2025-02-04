@@ -35,6 +35,7 @@ body {
   font-size: 1.125rem;
   color: var(--text-col);
   position: relative;
+  background-image: url("https://i.pinimg.com/736x/cb/8b/15/cb8b151a52a5cc0a44d4e96cff314de5.jpg");
   background-color: var(--page-col);
   {% if site.page-img %}
   background-image: url({{ site.page-img | relative_url }});
