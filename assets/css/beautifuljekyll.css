@@ -5,7 +5,6 @@ layout: null
 @import url("pygment_highlights.css");
 
 :root {
-  filter: invert(100%);
   /* config file CSS variables */
   --page-col: {{ site.page-col | default: "#FFFFFF" }};
   --text-col: {{ site.text-col | default: "#404040" }};
