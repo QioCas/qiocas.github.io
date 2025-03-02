@@ -167,13 +167,14 @@
     .logo {
       width: 150px; /* Độ rộng logo */
       height: 150px; /* Độ cao logo */
-      border-radius: 50%; /* Biến ảnh thành hình tròn */
-      object-fit: cover; /* Đảm bảo ảnh không bị méo */
-      border: 3px solid #000; /* Viền xung quanh logo */
+      clip-path: circle(50% at center);
+      /* border-radius: 50%; Biến ảnh thành hình tròn */
+      /* object-fit: cover; Đảm bảo ảnh không bị méo */
+      /* border: 3px solid #000; Viền xung quanh logo */
     }
   </style>
 
-  <link rel="icon" class="logo" href="{{ '/assets/img/users.jpg' | relative_url }}" />
+  <link rel="icon" class="logo" href="{{ '/assets/img/user.jpg' | relative_url }}" />
   
 
   {% if page.head-extra %}
