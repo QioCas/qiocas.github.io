@@ -1,16 +1,6 @@
 <head>
   <meta charset="utf-8">
 
-  <style>
-    .logo {
-        width: 150px; /* Độ rộng logo */
-        height: 150px; /* Độ cao logo */
-        border-radius: 50%; /* Biến ảnh thành hình tròn */
-        object-fit: cover; /* Đảm bảo ảnh không bị méo */
-        border: 3px solid #000; /* Viền xung quanh logo */
-    }
-  </style>
-  <link rel="icon" class="logo" href="/assets/img/user.jpg">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
   {% capture pagetitle %}
@@ -172,10 +162,7 @@
   <link rel="stylesheet" href="{{ "/assets/css/staticman.css" | relative_url }}">
   {% endif %}
 
-  {% assign favicon_exists = site.static_files | where: "path", "/favicon.ico" | size %}
-  {% if favicon_exists == 1 %}
-  <link rel="icon" href="{{ '/favicon.ico' | relative_url }}" />
-  {% endif %}
+  <link rel="icon" class="logo" href="{{ '/assets/img/user.jpg' | relative_url }}" />
 
   {% if page.head-extra %}
     {% for file in page.head-extra %}

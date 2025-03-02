@@ -123,6 +123,14 @@ hr.small {
   border-radius: 0.1875rem;
 }
 
+.logo {
+  width: 150px; /* Độ rộng logo */
+  height: 150px; /* Độ cao logo */
+  border-radius: 50%; /* Biến ảnh thành hình tròn */
+  object-fit: cover; /* Đảm bảo ảnh không bị méo */
+  border: 3px solid #000; /* Viền xung quanh logo */
+}
+
 /* fix in-page anchors to not be behind fixed header */
 :target:before {
   content: "";
