@@ -158,9 +158,7 @@
 
   {% include matomo.html %}
 
-  {% if page.comments and site.staticman.repository and site.staticman.branch %}
   <link rel="stylesheet" href="{{ "/assets/css/staticman.css" | relative_url }}">
-  {% endif %}
   
   <link rel="icon" class="logo" href="{{ '/assets/img/user.jpg' | relative_url }}" />
 
