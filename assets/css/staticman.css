@@ -178,3 +178,16 @@
   padding-top: 2em;
   border-top: 1px solid #f2f3f3;
 }
+
+/* 
+  Persional configuration
+*/
+
+
+.logo {
+  width: 150px; /* Độ rộng logo */
+  height: 150px; /* Độ cao logo */
+  border-radius: 0%; /* Biến ảnh thành hình tròn */
+  object-fit: cover; /* Đảm bảo ảnh không bị méo */
+  border: 3px solid #000; /* Viền xung quanh logo */
+}
