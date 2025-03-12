@@ -5,7 +5,7 @@ cover-img: "assets/img/background.jpg"
 subtitle: Tôi là ai và bạn đang làm gì ở đây?
 ---
 
-Chào mọi người, mình là Quang Trường, biệt danh của mình là QioCas.
+Chào mọi người, mình là Trần Quang Trường, biệt danh của mình là QioCas.
 
 Nơi đây là nơi mình sẽ kể về những câu chuyện xung quanh cuộc sống của bản thân.
 
