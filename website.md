@@ -21,7 +21,8 @@ title: Website
         }
         .link-item {
             padding: 10px;
-            border-bottom: 1px solid var(--link-col);
+            border-bottom: 1px solid #ddd;
+            color: var(--link-col);
             cursor: pointer;
         }
         .link-item:hover {
@@ -32,6 +33,35 @@ title: Website
             font-weight: bold;
             color: var(--text-col);
         }
+        /* CSS cho pop-up */
+        .search-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            width: 300px;
+            border-radius: 5px;
+        }
+        .search-popup input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
     </style>
 </head>
 <body>
@@ -40,6 +70,12 @@ title: Website
     </div>
     <ul class="link-list" id="linkList">
     </ul>
+
+    <!-- Pop-up tìm kiếm -->
+    <div class="overlay" id="overlay"></div>
+    <div class="search-popup" id="searchPopup">
+        <input type="text" id="popupSearchInput" placeholder="Gõ để tìm kiếm...">
+    </div>
 
     <script>
         // Danh sách link của bạn
@@ -51,17 +87,14 @@ title: Website
             { name: "Instagram", url: "https://www.instagram.com/", category: "Social" },
             { name: "Zalo", url: "https://chat.zalo.me/", category: "Social" },
             { name: "Discord", url: "https://discord.com/channels/@me", category: "Social" },
-            
             // Study
             { name: "MS Team", url: "https://teams.microsoft.com/v2/", category: "Study" },
             { name: "Course", url: "https://courses.uit.edu.vn/", category: "Study" },
             { name: "Student", url: "https://student.uit.edu.vn/", category: "Study" },
             { name: "DRL", url: "https://drl.uit.edu.vn/", category: "Study" },
-            
             // Chatbot
             { name: "ChatGPT", url: "https://chatgpt.com/", category: "Chatbot" },
             { name: "Grok", url: "https://grok.com/", category: "Chatbot" },
-            
             // Wibu
             { name: "Mangadex", url: "https://mangadex.org/", category: "Wibu" },
             { name: "LN", url: "https://ln.hako.vn/", category: "Wibu" },
@@ -70,6 +103,9 @@ title: Website
 
         const linkList = document.getElementById('linkList');
         const searchInput = document.getElementById('searchInput');
+        const searchPopup = document.getElementById('searchPopup');
+        const popupSearchInput = document.getElementById('popupSearchInput');
+        const overlay = document.getElementById('overlay');
 
         // Hàm hiển thị danh sách link
         function displayLinks(linkArray) {
@@ -98,7 +134,7 @@ title: Website
         // Hiển thị tất cả link khi tải trang
         displayLinks(links);
 
-        // Tìm kiếm link
+        // Tìm kiếm từ input chính
         searchInput.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
             const filteredLinks = links.filter(link => 
@@ -107,7 +143,16 @@ title: Website
             displayLinks(filteredLinks);
         });
 
-        // Nhấn Enter để mở link đầu tiên
+        // Tìm kiếm từ pop-up
+        popupSearchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredLinks = links.filter(link => 
+                link.name.toLowerCase().includes(searchTerm)
+            );
+            displayLinks(filteredLinks);
+        });
+
+        // Nhấn Enter trong input chính
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && searchInput.value) {
                 const searchTerm = searchInput.value.toLowerCase();
@@ -119,5 +164,45 @@ title: Website
                 }
             }
         });
+
+        // Nhấn Enter trong pop-up
+        popupSearchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && popupSearchInput.value) {
+                const searchTerm = popupSearchInput.value.toLowerCase();
+                const filteredLinks = links.filter(link => 
+                    link.name.toLowerCase().includes(searchTerm)
+                );
+                if (filteredLinks.length > 0) {
+                    window.open(filteredLinks[0].url, '_blank');
+                    closePopup();
+                }
+            }
+        });
+
+        // Lắng nghe gõ phím trên toàn trang
+        document.addEventListener('keydown', (e) => {
+            // Kiểm tra nếu phím là chữ cái, số hoặc ký tự hợp lệ và không trong input
+            if (e.key.length === 1 && !e.target.tagName.match(/INPUT|TEXTAREA/)) {
+                searchPopup.style.display = 'block';
+                overlay.style.display = 'block';
+                popupSearchInput.focus();
+                popupSearchInput.value = e.key; // Thêm ký tự vừa gõ vào ô tìm kiếm
+            }
+            // Nhấn ESC để đóng pop-up
+            if (e.key === 'Escape') {
+                closePopup();
+            }
+        });
+
+        // Đóng pop-up khi nhấp vào overlay
+        overlay.addEventListener('click', closePopup);
+
+        // Hàm đóng pop-up
+        function closePopup() {
+            searchPopup.style.display = 'none';
+            overlay.style.display = 'none';
+            popupSearchInput.value = '';
+            displayLinks(links); // Reset danh sách link
+        }
     </script>
 </body>
