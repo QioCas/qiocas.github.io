@@ -14,6 +14,9 @@ title: Website
             width: 100%;
             padding: 8px;
             margin-bottom: 10px;
+            background: #fff; /* Màu nền trắng giống trong hình */
+            border: 1px solid #ccc; /* Viền xám nhạt */
+            border-radius: 3px;
         }
         .link-list {
             list-style: none;
@@ -53,8 +56,8 @@ title: Website
             width: 100%;
             padding: 8px;
             box-sizing: border-box;
-            background: #f0f0f0; /* Màu nền ô tìm kiếm giống trong hình */
-            border: 1px solid #ccc;
+            background: #fff; /* Màu nền trắng giống ô tìm kiếm chính */
+            border: 1px solid #ccc; /* Viền xám nhạt */
             border-radius: 3px;
         }
         .popup-results {
@@ -66,6 +69,8 @@ title: Website
             padding: 8px;
             cursor: pointer;
             color: #333; /* Màu chữ giống trong hình */
+            background: #fff; /* Màu nền trắng giống ô tìm kiếm chính */
+            border-bottom: 1px solid #ddd; /* Đường viền dưới giống danh sách chính */
         }
         .popup-result-item:hover {
             background-color: #e0e0e0; /* Hiệu ứng hover giống trong hình */
