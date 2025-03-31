@@ -14,7 +14,7 @@ title: Website
             width: 100%;
             padding: 8px;
             margin-bottom: 10px;
-            background: #fff; /* Màu nền trắng giống trong hình */
+            background: #fff; /* Màu nền trắng */
             border: 1px solid #ccc; /* Viền xám nhạt */
             border-radius: 3px;
         }
@@ -36,55 +36,6 @@ title: Website
             font-weight: bold;
             color: var(--text-col);
         }
-        /* CSS cho pop-up */
-        .search-popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: none; /* Không có background */
-            padding: 0; /* Bỏ padding */
-            border: none; /* Bỏ viền */
-            box-shadow: none; /* Bỏ bóng */
-            z-index: 1000;
-            width: 300px; /* Kích thước giống trong hình */
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .search-popup input {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-            background: #fff; /* Màu nền trắng giống ô tìm kiếm chính */
-            border: 1px solid #ccc; /* Viền xám nhạt */
-            border-radius: 3px;
-        }
-        .popup-results {
-            list-style: none;
-            padding: 0;
-            margin-top: 5px;
-        }
-        .popup-result-item {
-            padding: 8px;
-            cursor: pointer;
-            color: #333; /* Màu chữ giống trong hình */
-            background: #fff; /* Màu nền trắng giống ô tìm kiếm chính */
-            border-bottom: 1px solid #ddd; /* Đường viền dưới giống danh sách chính */
-        }
-        .popup-result-item:hover {
-            background-color: #e0e0e0; /* Hiệu ứng hover giống trong hình */
-        }
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: transparent; /* Overlay trong suốt */
-            z-index: 999;
-        }
     </style>
 </head>
 <body>
@@ -93,13 +44,6 @@ title: Website
     </div>
     <ul class="link-list" id="linkList">
     </ul>
-
-    <!-- Pop-up tìm kiếm -->
-    <div class="overlay" id="overlay"></div>
-    <div class="search-popup" id="searchPopup">
-        <input type="text" id="popupSearchInput" placeholder="Gõ để tìm kiếm...">
-        <ul class="popup-results" id="popupResults"></ul>
-    </div>
 
     <script>
         // Danh sách link của bạn
@@ -127,10 +71,6 @@ title: Website
 
         const linkList = document.getElementById('linkList');
         const searchInput = document.getElementById('searchInput');
-        const searchPopup = document.getElementById('searchPopup');
-        const popupSearchInput = document.getElementById('popupSearchInput');
-        const popupResults = document.getElementById('popupResults');
-        const overlay = document.getElementById('overlay');
 
         // Hàm hiển thị danh sách link chính
         function displayLinks(linkArray) {
@@ -156,21 +96,6 @@ title: Website
             });
         }
 
-        // Hàm hiển thị kết quả trong pop-up
-        function displayPopupResults(linkArray) {
-            popupResults.innerHTML = '';
-            linkArray.forEach(link => {
-                const li = document.createElement('li');
-                li.className = 'popup-result-item';
-                li.textContent = link.name;
-                li.onclick = () => {
-                    window.open(link.url, '_blank');
-                    closePopup();
-                };
-                popupResults.appendChild(li);
-            });
-        }
-
         // Hiển thị tất cả link khi tải trang
         displayLinks(links);
 
@@ -181,16 +106,6 @@ title: Website
                 link.name.toLowerCase().includes(searchTerm)
             );
             displayLinks(filteredLinks);
-        });
-
-        // Tìm kiếm từ pop-up
-        popupSearchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const filteredLinks = links.filter(link => 
-                link.name.toLowerCase().includes(searchTerm)
-            );
-            displayPopupResults(filteredLinks);
-            displayLinks(filteredLinks); // Đồng bộ với danh sách chính
         });
 
         // Nhấn Enter trong input chính
@@ -206,48 +121,23 @@ title: Website
             }
         });
 
-        // Nhấn Enter trong pop-up
-        popupSearchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && popupSearchInput.value) {
-                const searchTerm = popupSearchInput.value.toLowerCase();
+        // Lắng nghe gõ phím trên toàn trang
+        document.addEventListener('keydown', (e) => {
+            // Kiểm tra nếu phím là chữ cái, số hoặc ký tự hợp lệ và không trong input
+            if (e.key.length === 1 && !e.target.tagName.match(/INPUT|TEXTAREA/)) {
+                searchInput.focus(); // Focus vào ô tìm kiếm
+                searchInput.value += e.key; // Thêm ký tự vừa gõ vào ô tìm kiếm
+                const searchTerm = searchInput.value.toLowerCase();
                 const filteredLinks = links.filter(link => 
                     link.name.toLowerCase().includes(searchTerm)
                 );
-                if (filteredLinks.length > 0) {
-                    window.open(filteredLinks[0].url, '_blank');
-                    closePopup();
-                }
-            }
-        });
-
-        // Lắng nghe gõ phím trên toàn trang
-        document.addEventListener('keydown', (e) => {
-            if (e.key.length === 1 && !e.target.tagName.match(/INPUT|TEXTAREA/)) {
-                searchPopup.style.display = 'block';
-                overlay.style.display = 'block';
-                popupSearchInput.focus();
-                popupSearchInput.value = e.key;
-                const filteredLinks = links.filter(link => 
-                    link.name.toLowerCase().includes(e.key.toLowerCase())
-                );
-                displayPopupResults(filteredLinks);
                 displayLinks(filteredLinks);
             }
+            // Nhấn ESC để xóa ô tìm kiếm
             if (e.key === 'Escape') {
-                closePopup();
+                searchInput.value = '';
+                displayLinks(links); // Reset danh sách link
             }
         });
-
-        // Đóng pop-up khi nhấp vào overlay
-        overlay.addEventListener('click', closePopup);
-
-        // Hàm đóng pop-up
-        function closePopup() {
-            searchPopup.style.display = 'none';
-            overlay.style.display = 'none';
-            popupSearchInput.value = '';
-            displayPopupResults([]); // Xóa kết quả trong pop-up
-            displayLinks(links); // Reset danh sách link chính
-        }
     </script>
 </body>
