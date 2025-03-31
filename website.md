@@ -34,12 +34,12 @@ cover-img: "assets/img/background.jpg"
             cursor: pointer;
         }
         .link-item:hover {
-            background-color: #f5f5f5;
+            background-color: var(--text-col);
         }
         .category {
             margin: 20px 0 10px;
             font-weight: bold;
-            color: #333;
+            color: var(--link-col);
         }
     </style>
 </head>
