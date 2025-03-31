@@ -4,18 +4,10 @@ title: Website
 cover-img: "assets/img/background.jpg"
 ---
 
-<!-- <!DOCTYPE html>
-<html lang="vi"> -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        } */
         .search-container {
             margin-bottom: 20px;
         }
@@ -30,16 +22,16 @@ cover-img: "assets/img/background.jpg"
         }
         .link-item {
             padding: 10px;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid var(--text-col);
             cursor: pointer;
         }
         .link-item:hover {
-            background-color: var(--text-col);
+            background-color: var(--hover-col);
         }
         .category {
             margin: 20px 0 10px;
             font-weight: bold;
-            color: var(--link-col);
+            color: var(--text-col);
         }
     </style>
 </head>
@@ -130,27 +122,3 @@ cover-img: "assets/img/background.jpg"
         });
     </script>
 </body>
-<!-- </html> -->
-
-<!-- - Social:
-    + [Facebook](https://www.facebook.com/)
-    + [Telegram](https://web.telegram.org/)
-    + [TikTok](https://www.tiktok.com/)
-    + [Instagram](https://www.instagram.com/)
-    + [Zalo](https://chat.zalo.me/)
-    + [Discord](https://discord.com/channels/@me)
-
-- Study:
-    + [MS Team](https://teams.microsoft.com/v2/)
-    + [Course](https://courses.uit.edu.vn/)
-    + [Student](https://student.uit.edu.vn/)
-    + [DRL](https://drl.uit.edu.vn/)
-
-- Chatbot:
-    + [ChatGPT](https://chatgpt.com/)
-    + [Grok](https://grok.com/)
-
-- Wibu:
-    + [Mangadex](https://mangadex.org/)
-    + [LN](https://ln.hako.vn/)
-    + [Anime Vietsub](https://bit.ly/animevietsubtv) -->
