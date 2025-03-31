@@ -46,11 +46,25 @@ title: Website
             z-index: 1000;
             width: 300px;
             border-radius: 5px;
+            max-height: 400px;
+            overflow-y: auto;
         }
         .search-popup input {
             width: 100%;
             padding: 8px;
             box-sizing: border-box;
+        }
+        .popup-results {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+        .popup-result-item {
+            padding: 8px;
+            cursor: pointer;
+        }
+        .popup-result-item:hover {
+            background-color: #f5f5f5;
         }
         .overlay {
             display: none;
@@ -75,6 +89,7 @@ title: Website
     <div class="overlay" id="overlay"></div>
     <div class="search-popup" id="searchPopup">
         <input type="text" id="popupSearchInput" placeholder="Gõ để tìm kiếm...">
+        <ul class="popup-results" id="popupResults"></ul>
     </div>
 
     <script>
@@ -105,9 +120,10 @@ title: Website
         const searchInput = document.getElementById('searchInput');
         const searchPopup = document.getElementById('searchPopup');
         const popupSearchInput = document.getElementById('popupSearchInput');
+        const popupResults = document.getElementById('popupResults');
         const overlay = document.getElementById('overlay');
 
-        // Hàm hiển thị danh sách link
+        // Hàm hiển thị danh sách link chính
         function displayLinks(linkArray) {
             linkList.innerHTML = '';
             const categories = [...new Set(linkArray.map(link => link.category))];
@@ -131,6 +147,21 @@ title: Website
             });
         }
 
+        // Hàm hiển thị kết quả trong pop-up
+        function displayPopupResults(linkArray) {
+            popupResults.innerHTML = '';
+            linkArray.forEach(link => {
+                const li = document.createElement('li');
+                li.className = 'popup-result-item';
+                li.textContent = link.name;
+                li.onclick = () => {
+                    window.open(link.url, '_blank');
+                    closePopup();
+                };
+                popupResults.appendChild(li);
+            });
+        }
+
         // Hiển thị tất cả link khi tải trang
         displayLinks(links);
 
@@ -149,7 +180,8 @@ title: Website
             const filteredLinks = links.filter(link => 
                 link.name.toLowerCase().includes(searchTerm)
             );
-            displayLinks(filteredLinks);
+            displayPopupResults(filteredLinks);
+            displayLinks(filteredLinks); // Đồng bộ với danh sách chính
         });
 
         // Nhấn Enter trong input chính
@@ -181,14 +213,17 @@ title: Website
 
         // Lắng nghe gõ phím trên toàn trang
         document.addEventListener('keydown', (e) => {
-            // Kiểm tra nếu phím là chữ cái, số hoặc ký tự hợp lệ và không trong input
             if (e.key.length === 1 && !e.target.tagName.match(/INPUT|TEXTAREA/)) {
                 searchPopup.style.display = 'block';
                 overlay.style.display = 'block';
                 popupSearchInput.focus();
-                popupSearchInput.value = e.key; // Thêm ký tự vừa gõ vào ô tìm kiếm
+                popupSearchInput.value = e.key;
+                const filteredLinks = links.filter(link => 
+                    link.name.toLowerCase().includes(e.key.toLowerCase())
+                );
+                displayPopupResults(filteredLinks);
+                displayLinks(filteredLinks);
             }
-            // Nhấn ESC để đóng pop-up
             if (e.key === 'Escape') {
                 closePopup();
             }
@@ -202,7 +237,8 @@ title: Website
             searchPopup.style.display = 'none';
             overlay.style.display = 'none';
             popupSearchInput.value = '';
-            displayLinks(links); // Reset danh sách link
+            displayPopupResults([]); // Xóa kết quả trong pop-up
+            displayLinks(links); // Reset danh sách link chính
         }
     </script>
 </body>
