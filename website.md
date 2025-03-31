@@ -127,7 +127,7 @@ title: Website
             if (
                 e.key.length === 1 && 
                 !e.target.tagName.match(/INPUT|TEXTAREA/) && 
-                !e.ctrlKey && !e.altKey && !e.shiftKey && !e.metaKey
+                !e.ctrlKey && !e.altKey && !e.shiftKey && !e.metaKey && !(e.key === ' ')
             ) {
                 e.preventDefault(); // Ngăn hành vi mặc định của trình duyệt
                 searchInput.focus(); // Focus vào ô tìm kiếm
