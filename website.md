@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Website
+cover-img: "assets/img/background.jpg"
 ---
 
 - Social:
