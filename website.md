@@ -123,8 +123,12 @@ title: Website
 
         // Lắng nghe gõ phím trên toàn trang
         document.addEventListener('keydown', (e) => {
-            // Kiểm tra nếu phím là chữ cái, số hoặc ký tự hợp lệ và không trong input
-            if (e.key.length === 1 && !e.target.tagName.match(/INPUT|TEXTAREA/)) {
+            // Kiểm tra nếu phím là chữ cái, số hoặc ký tự hợp lệ, không trong input, và không có phím điều khiển
+            if (
+                e.key.length === 1 && 
+                !e.target.tagName.match(/INPUT|TEXTAREA/) && 
+                !e.ctrlKey && !e.altKey && !e.shiftKey && !e.metaKey
+            ) {
                 e.preventDefault(); // Ngăn hành vi mặc định của trình duyệt
                 searchInput.focus(); // Focus vào ô tìm kiếm
                 searchInput.value += e.key; // Thêm ký tự vừa gõ vào ô tìm kiếm
