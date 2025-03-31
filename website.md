@@ -88,7 +88,7 @@ cover-img: "assets/img/background.jpg"
     </div>
 
     <script>
-        const OPENAI_API_KEY = "your-api-key"; // Replace with your OpenAI API key
+        const OPENAI_API_KEY = "67ca908c-a600-8001-ab91-669e66523578"; // Replace with your OpenAI API key
 
         async function sendMessage() {
             let userInput = document.getElementById("user-input").value;
