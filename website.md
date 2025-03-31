@@ -6,28 +6,16 @@ cover-img: "assets/img/background.jpg"
 
 <!-- <!DOCTYPE html>
 <html lang="vi"> -->
-html
-
-Xem Trước
-
-Thu gọn
-
-Bọc lại
-
-Sao chép
-<!DOCTYPE html>
-<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách đường dẫn</title>
     <style>
-        body {
+        /* body {
             font-family: Arial, sans-serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-        }
+        } */
         .search-container {
             margin-bottom: 20px;
         }
@@ -60,7 +48,6 @@ Sao chép
         <input type="text" id="searchInput" placeholder="Tìm kiếm đường dẫn...">
     </div>
     <ul class="link-list" id="linkList">
-        <!-- Danh sách link sẽ được thêm bằng JavaScript -->
     </ul>
 
     <script>
