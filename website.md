@@ -1,7 +1,6 @@
 ---
 layout: page
 title: Website
-cover-img: "assets/img/background.jpg"
 ---
 
 <head>
@@ -22,7 +21,7 @@ cover-img: "assets/img/background.jpg"
         }
         .link-item {
             padding: 10px;
-            border-bottom: 1px solid var(--text-col);
+            border-bottom: 1px solid var(--link-col);
             cursor: pointer;
         }
         .link-item:hover {
