@@ -125,6 +125,7 @@ title: Website
         document.addEventListener('keydown', (e) => {
             // Kiểm tra nếu phím là chữ cái, số hoặc ký tự hợp lệ và không trong input
             if (e.key.length === 1 && !e.target.tagName.match(/INPUT|TEXTAREA/)) {
+                e.preventDefault(); // Ngăn hành vi mặc định của trình duyệt
                 searchInput.focus(); // Focus vào ô tìm kiếm
                 searchInput.value += e.key; // Thêm ký tự vừa gõ vào ô tìm kiếm
                 const searchTerm = searchInput.value.toLowerCase();
