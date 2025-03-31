@@ -6,6 +6,17 @@ cover-img: "assets/img/background.jpg"
 
 <!-- <!DOCTYPE html>
 <html lang="vi"> -->
+html
+
+Xem Trước
+
+Thu gọn
+
+Bọc lại
+
+Sao chép
+<!DOCTYPE html>
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,6 +48,11 @@ cover-img: "assets/img/background.jpg"
         .link-item:hover {
             background-color: #f5f5f5;
         }
+        .category {
+            margin: 20px 0 10px;
+            font-weight: bold;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -48,12 +64,30 @@ cover-img: "assets/img/background.jpg"
     </ul>
 
     <script>
-        // Danh sách link mẫu (bạn có thể thêm link của mình vào đây)
+        // Danh sách link của bạn
         const links = [
-            { name: "Google", url: "https://www.google.com" },
-            { name: "Facebook", url: "https://www.facebook.com" },
-            { name: "YouTube", url: "https://www.youtube.com" },
-            { name: "Twitter", url: "https://www.twitter.com" }
+            // Social
+            { name: "Facebook", url: "https://www.facebook.com/", category: "Social" },
+            { name: "Telegram", url: "https://web.telegram.org/", category: "Social" },
+            { name: "TikTok", url: "https://www.tiktok.com/", category: "Social" },
+            { name: "Instagram", url: "https://www.instagram.com/", category: "Social" },
+            { name: "Zalo", url: "https://chat.zalo.me/", category: "Social" },
+            { name: "Discord", url: "https://discord.com/channels/@me", category: "Social" },
+            
+            // Study
+            { name: "MS Team", url: "https://teams.microsoft.com/v2/", category: "Study" },
+            { name: "Course", url: "https://courses.uit.edu.vn/", category: "Study" },
+            { name: "Student", url: "https://student.uit.edu.vn/", category: "Study" },
+            { name: "DRL", url: "https://drl.uit.edu.vn/", category: "Study" },
+            
+            // Chatbot
+            { name: "ChatGPT", url: "https://chatgpt.com/", category: "Chatbot" },
+            { name: "Grok", url: "https://grok.com/", category: "Chatbot" },
+            
+            // Wibu
+            { name: "Mangadex", url: "https://mangadex.org/", category: "Wibu" },
+            { name: "LN", url: "https://ln.hako.vn/", category: "Wibu" },
+            { name: "Anime Vietsub", url: "https://bit.ly/animevietsubtv", category: "Wibu" }
         ];
 
         const linkList = document.getElementById('linkList');
@@ -62,14 +96,24 @@ cover-img: "assets/img/background.jpg"
         // Hàm hiển thị danh sách link
         function displayLinks(linkArray) {
             linkList.innerHTML = '';
-            linkArray.forEach(link => {
-                const li = document.createElement('li');
-                li.className = 'link-item';
-                li.textContent = link.name;
-                li.onclick = () => {
-                    window.open(link.url, '_blank', 'width=800,height=600');
-                };
-                linkList.appendChild(li);
+            const categories = [...new Set(linkArray.map(link => link.category))];
+            
+            categories.forEach(category => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+                categoryDiv.textContent = category;
+                linkList.appendChild(categoryDiv);
+
+                const categoryLinks = linkArray.filter(link => link.category === category);
+                categoryLinks.forEach(link => {
+                    const li = document.createElement('li');
+                    li.className = 'link-item';
+                    li.textContent = link.name;
+                    li.onclick = () => {
+                        window.open(link.url, '_blank');
+                    };
+                    linkList.appendChild(li);
+                });
             });
         }
 
@@ -83,6 +127,19 @@ cover-img: "assets/img/background.jpg"
                 link.name.toLowerCase().includes(searchTerm)
             );
             displayLinks(filteredLinks);
+        });
+
+        // Nhấn Enter để mở link đầu tiên
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && searchInput.value) {
+                const searchTerm = searchInput.value.toLowerCase();
+                const filteredLinks = links.filter(link => 
+                    link.name.toLowerCase().includes(searchTerm)
+                );
+                if (filteredLinks.length > 0) {
+                    window.open(filteredLinks[0].url, '_blank');
+                }
+            }
         });
     </script>
 </body>
