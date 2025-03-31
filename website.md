@@ -40,12 +40,12 @@ title: Website
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            background: none; /* Không có background */
+            padding: 0; /* Bỏ padding */
+            border: none; /* Bỏ viền */
+            box-shadow: none; /* Bỏ bóng */
             z-index: 1000;
-            width: 300px;
-            border-radius: 5px;
+            width: 300px; /* Kích thước giống trong hình */
             max-height: 400px;
             overflow-y: auto;
         }
@@ -53,18 +53,22 @@ title: Website
             width: 100%;
             padding: 8px;
             box-sizing: border-box;
+            background: #f0f0f0; /* Màu nền ô tìm kiếm giống trong hình */
+            border: 1px solid #ccc;
+            border-radius: 3px;
         }
         .popup-results {
             list-style: none;
             padding: 0;
-            margin-top: 10px;
+            margin-top: 5px;
         }
         .popup-result-item {
             padding: 8px;
             cursor: pointer;
+            color: #333; /* Màu chữ giống trong hình */
         }
         .popup-result-item:hover {
-            background-color: #f5f5f5;
+            background-color: #e0e0e0; /* Hiệu ứng hover giống trong hình */
         }
         .overlay {
             display: none;
@@ -73,7 +77,7 @@ title: Website
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: transparent; /* Overlay trong suốt */
             z-index: 999;
         }
     </style>
