@@ -84,44 +84,26 @@ print("Hello, World!")  # Python example
                 }
             } else if (lang === "cpp") {
                 const requestBody = {
-                    code: code,
-                    compiler: "gcc-14.1.0", // Latest GCC on Wandbox
-                    options: "",
-                    "compiler-option-raw": "",
-                    "runtime-option-raw": ""
+                    "cmd": "g++ -o a.out -x c++ - && ./a.out", // Compile and run C++
+                    "src": code
                 };
 
                 try {
-                    const response = await fetch("https://wandbox.org/api/compile.json", {
+                    const response = await fetch("http://coliru.stacked-crooked.com/compile", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(requestBody)
                     });
 
-                    // Check if response is OK
                     if (!response.ok) {
                         const text = await response.text();
-                        throw new Error(`Wandbox returned status ${response.status}: ${text}`);
+                        throw new Error(`Coliru returned status ${response.status}: ${text}`);
                     }
 
-                    const data = await response.json();
-
-                    if (data.status === "0") {
-                        outputEl.innerText = data.program_message || "No output";
-                    } else {
-                        errorEl.innerText = data.compiler_error || data.program_error || "Compilation failed";
-                    }
+                    const output = await response.text();
+                    outputEl.innerText = output || "No output";
                 } catch (err) {
-                    // Handle non-JSON response or network errors
-                    errorEl.innerText = `Error with Wandbox: ${err.message}`;
-                    if (err.message.includes("not valid JSON")) {
-                        const rawResponse = await fetch("https://wandbox.org/api/compile.json", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(requestBody)
-                        }).then(res => res.text());
-                        errorEl.innerText += `\nRaw response: ${rawResponse}`;
-                    }
+                    errorEl.innerText = `Error with Coliru: ${err.message}`;
                 }
             }
 
