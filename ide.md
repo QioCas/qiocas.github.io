@@ -1,5 +1,7 @@
+---
 layout: page
-title: About me
+title: IDE
+---
 
 <head>
     <meta charset="UTF-8">
