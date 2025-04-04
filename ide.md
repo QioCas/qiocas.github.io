@@ -92,12 +92,16 @@ print("Hello, World!")  # Python example
                 };
 
                 try {
-                    const response = await fetch("https://wandbox.org/api/compile.json", {
+                    const response = await fetch("http://coliru.stacked-crooked.com/compile", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(requestBody)
+                        body: JSON.stringify({
+                            "cmd": "g++ -o a.out -x c++ - && ./a.out",
+                            "src": code
+                        })
                     });
-
+                    const output = await response.text();
+                    outputEl.innerText = output;
                     // Check if response is OK
                     if (!response.ok) {
                         const text = await response.text();
