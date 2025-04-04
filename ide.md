@@ -36,6 +36,10 @@ title: IDE
         indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/"
       });
       console.log("Pyodide loaded");
+      // Load external libraries
+      await pyodide.loadPackage(["numpy", "matplotlib"]);
+      
+      console.log("numpy and matplotlib loaded");
     }
 
     loadPyodideAndRun();
