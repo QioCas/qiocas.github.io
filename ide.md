@@ -44,7 +44,6 @@ print("Hello, World!")  # Python example
             console.log("Pyodide loaded");
         }
 
-        // Call the loading function when the page loads
         loadPyodideAndRun();
 
         async function runCode() {
@@ -63,7 +62,6 @@ print("Hello, World!")  # Python example
                     return;
                 }
                 try {
-                    // Redirect Python stdout to capture output
                     pyodide.runPython(`
                         import sys
                         import io
@@ -76,8 +74,31 @@ print("Hello, World!")  # Python example
                     errorEl.innerText = err.message;
                 }
             } else if (lang === "cpp") {
-                errorEl.innerText = "C++ execution is not supported directly in the browser. " +
-                    "You need a server-side solution (e.g., Flask with g++) or WebAssembly compilation.";
+                // Use Wandbox API for C++ compilation
+                const requestBody = {
+                    code: code,
+                    compiler: "gcc-14.1.0", // Latest GCC version on Wandbox as of now
+                    options: "", // Optional compiler flags
+                    "compiler-option-raw": "", // Raw compiler options
+                    "runtime-option-raw": "" // Runtime options
+                };
+
+                try {
+                    const response = await fetch("https://wandbox.org/api/compile.json", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(requestBody)
+                    });
+                    const data = await response.json();
+
+                    if (data.status === "0") {
+                        outputEl.innerText = data.program_message || "No output";
+                    } else {
+                        errorEl.innerText = data.compiler_error || data.program_error || "Compilation failed";
+                    }
+                } catch (err) {
+                    errorEl.innerText = "Error connecting to Wandbox: " + err.message;
+                }
             }
         }
     </script>
