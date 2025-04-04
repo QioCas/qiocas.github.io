@@ -12,6 +12,8 @@ title: IDE
         pre { background: #f4f4f4; padding: 10px; border: 1px solid #ddd; }
         .error { color: red; }
         select, button { margin: 10px 0; }
+        #status { font-style: italic; color: #555; }
+        button:disabled { opacity: 0.5; }
     </style>
     <!-- Load Pyodide for Python execution -->
     <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
@@ -28,7 +30,8 @@ title: IDE
 print("Hello, World!")  # Python example
     </textarea>
     <br>
-    <button onclick="runCode()">Run</button>
+    <button id="runBtn" onclick="runCode()">Run</button>
+    <span id="status"></span>
     <h3>Output:</h3>
     <pre id="output"></pre>
     <pre id="error" class="error"></pre>
@@ -51,14 +54,20 @@ print("Hello, World!")  # Python example
             const lang = document.getElementById("lang").value;
             const outputEl = document.getElementById("output");
             const errorEl = document.getElementById("error");
+            const runBtn = document.getElementById("runBtn");
+            const statusEl = document.getElementById("status");
 
-            // Clear previous output
+            // Clear previous output and set loading state
             outputEl.innerText = "";
             errorEl.innerText = "";
+            statusEl.innerText = "Running...";
+            runBtn.disabled = true;
 
             if (lang === "python") {
                 if (!pyodide) {
                     errorEl.innerText = "Pyodide is still loading, please wait...";
+                    statusEl.innerText = "";
+                    runBtn.disabled = false;
                     return;
                 }
                 try {
@@ -74,13 +83,12 @@ print("Hello, World!")  # Python example
                     errorEl.innerText = err.message;
                 }
             } else if (lang === "cpp") {
-                // Use Wandbox API for C++ compilation
                 const requestBody = {
                     code: code,
-                    compiler: "gcc-14.1.0", // Latest GCC version on Wandbox as of now
-                    options: "", // Optional compiler flags
-                    "compiler-option-raw": "", // Raw compiler options
-                    "runtime-option-raw": "" // Runtime options
+                    compiler: "gcc-14.1.0", // Latest GCC on Wandbox
+                    options: "",
+                    "compiler-option-raw": "",
+                    "runtime-option-raw": ""
                 };
 
                 try {
@@ -89,6 +97,13 @@ print("Hello, World!")  # Python example
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(requestBody)
                     });
+
+                    // Check if response is OK
+                    if (!response.ok) {
+                        const text = await response.text();
+                        throw new Error(`Wandbox returned status ${response.status}: ${text}`);
+                    }
+
                     const data = await response.json();
 
                     if (data.status === "0") {
@@ -97,9 +112,22 @@ print("Hello, World!")  # Python example
                         errorEl.innerText = data.compiler_error || data.program_error || "Compilation failed";
                     }
                 } catch (err) {
-                    errorEl.innerText = "Error connecting to Wandbox: " + err.message;
+                    // Handle non-JSON response or network errors
+                    errorEl.innerText = `Error with Wandbox: ${err.message}`;
+                    if (err.message.includes("not valid JSON")) {
+                        const rawResponse = await fetch("https://wandbox.org/api/compile.json", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(requestBody)
+                        }).then(res => res.text());
+                        errorEl.innerText += `\nRaw response: ${rawResponse}`;
+                    }
                 }
             }
+
+            // Reset status and button
+            statusEl.innerText = "";
+            runBtn.disabled = false;
         }
     </script>
 </body>
