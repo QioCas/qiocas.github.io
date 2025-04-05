@@ -29,7 +29,7 @@ title: IDE
   <title>Simple Python Browser IDE</title>
   <style>
     textarea { width: 100%; height: 200px; font-family: monospace; }
-    pre { background: #f4f4f4; padding: 10px; border: 1px solid #ddd; }
+    pre { background: #252526; padding: 10px; border: 1px solid #ddd; }
     .error { color: red; }
     button { margin: 10px 0; }
     #status { font-style: italic; color: #555; }
@@ -43,6 +43,7 @@ title: IDE
   <script>
     const editor = CodeMirror.fromTextArea(document.getElementById('code'), {
       mode: 'python',
+      theme: 'material',  // <<<=== add this
       lineNumbers: true,
       indentUnit: 4,
       tabSize: 4,
