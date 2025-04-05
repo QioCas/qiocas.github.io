@@ -5,6 +5,25 @@ title: IDE
 
 <html lang="en">
 <head>
+  <!-- Add this in <head> -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.css">
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/python/python.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/edit/closebrackets.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/hint/show-hint.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/hint/show-hint.css">
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/hint/python-hint.js"></script>
+
+  <style>
+    .CodeMirror {
+      border: 1px solid #ddd;
+      height: auto;
+      min-height: 200px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+  </style>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Simple Python Browser IDE</title>
@@ -20,7 +39,21 @@ title: IDE
 </head>
 <body>
   <h2>Python Browser IDE</h2>
-  <textarea id="code" placeholder="Write your Python code here...">print("Hello, World!")</textarea>
+  <textarea id="code">print("Hello, World!")</textarea>
+  <script>
+    const editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+      mode: 'python',
+      lineNumbers: true,
+      indentUnit: 4,
+      tabSize: 4,
+      indentWithTabs: true,
+      autoCloseBrackets: true,
+      matchBrackets: true,
+      extraKeys: {
+        "Ctrl-Space": "autocomplete"
+      }
+    });
+  </script>
   <br />
   <button id="runBtn" onclick="runCode()">Run</button>
   <span id="status"></span>
@@ -38,14 +71,13 @@ title: IDE
       console.log("Pyodide loaded");
       // Load external libraries
       await pyodide.loadPackage(["numpy", "matplotlib"]);
-      
       console.log("numpy and matplotlib loaded");
     }
 
     loadPyodideAndRun();
 
     async function runCode() {
-      const code = document.getElementById("code").value;
+      const code = editor.getValue();  // <<==== get code from CodeMirror
       const outputEl = document.getElementById("output");
       const errorEl = document.getElementById("error");
       const runBtn = document.getElementById("runBtn");
