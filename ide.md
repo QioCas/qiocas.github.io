@@ -16,7 +16,9 @@ title: IDE
 
   <style>
     .CodeMirror {
-      border: 1px solid #ddd;
+      background-color: #1e1e1e; /* VS Code dark background */
+      color: #d4d4d4;           /* VS Code light text */
+      border: 1px solid #333;    /* Darker border */
       height: auto;
       min-height: 200px;
       font-family: monospace;
@@ -29,7 +31,7 @@ title: IDE
   <title>Simple Python Browser IDE</title>
   <style>
     textarea { width: 100%; height: 200px; font-family: monospace; }
-    pre { background: #252526; padding: 10px; border: 1px solid #ddd; }
+    pre { background: #f4f4f4; padding: 10px; border: 1px solid #ddd; }
     .error { color: red; }
     button { margin: 10px 0; }
     #status { font-style: italic; color: #555; }
