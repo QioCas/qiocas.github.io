@@ -1,4 +1,8 @@
-<!DOCTYPE html>
+---
+layout: page
+title: IDE
+---
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
