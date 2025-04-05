@@ -12,7 +12,6 @@ title: IDE
   <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/hint/show-hint.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/hint/show-hint.css">
   <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/hint/python-hint.js"></script>
-  <!-- Add this for line movement functionality -->
   <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/edit/matchbrackets.js"></script>
 
   <style>
@@ -55,8 +54,15 @@ title: IDE
     }
 
     textarea { width: 100%; height: 200px; font-family: monospace; }
-    pre { background: #f4f4f4; padding: 10px; border: 1px solid #ddd; }
-    .error { color: red; }
+    #output-box { 
+      background: #f4f4f4; 
+      padding: 10px; 
+      border: 1px solid #ddd; 
+      min-height: 100px; 
+      white-space: pre-wrap; 
+      font-family: monospace;
+    }
+    .error-text { color: red; } /* Class for error text */
     button { margin: 10px 0; }
     #status { font-style: italic; color: #555; }
     button:disabled { opacity: 0.5; }
@@ -78,28 +84,24 @@ title: IDE
       matchBrackets: true,
       extraKeys: {
         "Ctrl-Space": "autocomplete",
-        "Ctrl-Enter": function(cm) { runCode(); }, // Run code with Ctrl+Enter
-        "Alt-Up": "swapLineUp",    // Move line up
-        "Alt-Down": "swapLineDown" // Move line down
+        "Ctrl-Enter": function(cm) { runCode(); },
+        "Alt-Up": "swapLineUp",
+        "Alt-Down": "swapLineDown"
       }
     });
 
-    // Auto-suggestion as you type
     editor.on("inputRead", function(cm, change) {
       if (change.origin !== "paste") {
         const cursor = cm.getCursor();
         const token = cm.getTokenAt(cursor);
-        
-        // Show hints only for letters and dots, not immediately after numbers
         if (/[a-zA-Z.]/.test(change.text[0]) && !/\d/.test(token.string)) {
           CodeMirror.commands.autocomplete(cm, null, {
-            completeSingle: false // Don't auto-insert if only one suggestion
+            completeSingle: false
           });
         }
       }
     });
 
-    // Optional: Improve suggestion trigger timing
     editor.on("change", function(cm, change) {
       if (change.origin === "+input" && !cm.state.completionActive) {
         setTimeout(function() {
@@ -112,8 +114,7 @@ title: IDE
   <button id="runBtn" onclick="runCode()">Run</button>
   <span id="status"></span>
   <h3>Output:</h3>
-  <pre id="output"></pre>
-  <pre id="error" class="error"></pre>
+  <div id="output-box"></div>
 
   <script>
     let pyodide;
@@ -131,18 +132,17 @@ title: IDE
 
     async function runCode() {
       const code = editor.getValue();
-      const outputEl = document.getElementById("output");
-      const errorEl = document.getElementById("error");
+      const outputBox = document.getElementById("output-box");
       const runBtn = document.getElementById("runBtn");
       const statusEl = document.getElementById("status");
 
-      outputEl.innerText = "";
-      errorEl.innerText = "";
+      // Clear previous content
+      outputBox.innerHTML = "";
       statusEl.innerText = "Running...";
       runBtn.disabled = true;
 
       if (!pyodide) {
-        errorEl.innerText = "Pyodide is still loading, please wait...";
+        outputBox.innerHTML = '<span class="error-text">Pyodide is still loading, please wait...</span>';
         statusEl.innerText = "";
         runBtn.disabled = false;
         return;
@@ -153,12 +153,27 @@ title: IDE
           import sys
           import io
           sys.stdout = io.StringIO()
+          sys.stderr = io.StringIO()  # Capture errors too
         `);
         pyodide.runPython(code);
         const output = pyodide.runPython("sys.stdout.getvalue()");
-        outputEl.innerText = output;
+        const error = pyodide.runPython("sys.stderr.getvalue()");
+        
+        // Combine output and error in the same box
+        if (output) {
+          outputBox.innerText = output;
+        }
+        if (error) {
+          const errorSpan = document.createElement('span');
+          errorSpan.className = 'error-text';
+          errorSpan.innerText = error;
+          outputBox.appendChild(errorSpan);
+        }
       } catch (err) {
-        errorEl.innerText = err.message;
+        const errorSpan = document.createElement('span');
+        errorSpan.className = 'error-text';
+        errorSpan.innerText = err.message;
+        outputBox.appendChild(errorSpan);
       }
 
       statusEl.innerText = "";
