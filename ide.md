@@ -1,11 +1,11 @@
----
-layout: page
-title: IDE
----
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Add this in <head> -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Python Browser IDE</title>
+
+  <!-- CodeMirror CSS and JS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.css">
   <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/python/python.js"></script>
@@ -14,33 +14,63 @@ title: IDE
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/hint/show-hint.css">
   <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/hint/python-hint.js"></script>
 
+  <!-- Pyodide JS -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
+
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h2 {
+      margin-bottom: 10px;
+    }
     .CodeMirror {
       border: 1px solid #ddd;
-      height: auto;
       min-height: 200px;
-      font-family: monospace;
       font-size: 14px;
     }
+    button {
+      margin: 10px 0;
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 10px;
+      border: 1px solid #ddd;
+      overflow-x: auto;
+    }
+    .error {
+      color: red;
+    }
+    #status {
+      font-style: italic;
+      color: #555;
+      margin-left: 10px;
+    }
+    button:disabled {
+      opacity: 0.5;
+    }
   </style>
-
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Simple Python Browser IDE</title>
-  <style>
-    textarea { width: 100%; height: 200px; font-family: monospace; }
-    pre { background: #f4f4f4; padding: 10px; border: 1px solid #ddd; }
-    .error { color: red; }
-    button { margin: 10px 0; }
-    #status { font-style: italic; color: #555; }
-    button:disabled { opacity: 0.5; }
-  </style>
-  <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
 </head>
+
 <body>
   <h2>Python Browser IDE</h2>
+  
   <textarea id="code">print("Hello, World!")</textarea>
+  <br />
+  <button id="runBtn" onclick="runCode()">Run</button>
+  <span id="status"></span>
+
+  <h3>Output:</h3>
+  <pre id="output"></pre>
+
+  <h3>Errors:</h3>
+  <pre id="error" class="error"></pre>
+
   <script>
+    // Initialize CodeMirror
     const editor = CodeMirror.fromTextArea(document.getElementById('code'), {
       mode: 'python',
       lineNumbers: true,
@@ -53,31 +83,24 @@ title: IDE
         "Ctrl-Space": "autocomplete"
       }
     });
-  </script>
-  <br />
-  <button id="runBtn" onclick="runCode()">Run</button>
-  <span id="status"></span>
-  <h3>Output:</h3>
-  <pre id="output"></pre>
-  <pre id="error" class="error"></pre>
 
-  <script>
+    // Load Pyodide
     let pyodide;
 
-    async function loadPyodideAndRun() {
+    async function loadPyodideAndPackages() {
       pyodide = await loadPyodide({
         indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/"
       });
       console.log("Pyodide loaded");
-      // Load external libraries
       await pyodide.loadPackage(["numpy", "matplotlib"]);
       console.log("numpy and matplotlib loaded");
     }
 
-    loadPyodideAndRun();
+    loadPyodideAndPackages();
 
+    // Run Python Code
     async function runCode() {
-      const code = editor.getValue();  // <<==== get code from CodeMirror
+      const code = editor.getValue();
       const outputEl = document.getElementById("output");
       const errorEl = document.getElementById("error");
       const runBtn = document.getElementById("runBtn");
@@ -96,20 +119,15 @@ title: IDE
       }
 
       try {
-        pyodide.runPython(`
-          import sys
-          import io
-          sys.stdout = io.StringIO()
-        `);
-        pyodide.runPython(code);
-        const output = pyodide.runPython("sys.stdout.getvalue()");
-        outputEl.innerText = output;
+        const result = await pyodide.runPythonAsync(code);
+        outputEl.innerText = result !== undefined ? result.toString() : "Code executed successfully.";
+        statusEl.innerText = "Done.";
       } catch (err) {
-        errorEl.innerText = err.message;
+        errorEl.innerText = err;
+        statusEl.innerText = "Error.";
+      } finally {
+        runBtn.disabled = false;
       }
-
-      statusEl.innerText = "";
-      runBtn.disabled = false;
     }
   </script>
 </body>
