@@ -22,7 +22,6 @@ navbar-links:
   Home: "index"
   About Me: "aboutme"
   Website: "website"
-  IDE: "ide"
 
 ################
 # --- Logo --- #
