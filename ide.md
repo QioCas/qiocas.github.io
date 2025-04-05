@@ -5,7 +5,6 @@ title: IDE
 
 <html lang="en">
 <head>
-  <!-- Add this in <head> -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.css">
   <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/python/python.js"></script>
@@ -16,20 +15,43 @@ title: IDE
 
   <style>
     .CodeMirror {
-      background-color: #1e1e1e; /* VS Code dark background */
-      color: #d4d4d4;           /* VS Code light text */
-      border: 1px solid #333;    /* Darker border */
+      border: 1px solid #ddd;
       height: auto;
       min-height: 200px;
       font-family: monospace;
       font-size: 14px;
+      line-height: 1.5;
     }
-  </style>
 
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Simple Python Browser IDE</title>
-  <style>
+    .CodeMirror-scroll {
+      overflow: auto !important;
+      max-height: 400px;
+    }
+
+    .CodeMirror::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    .CodeMirror::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 5px;
+    }
+
+    .CodeMirror::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 5px;
+    }
+
+    .CodeMirror::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+
+    .CodeMirror {
+      scrollbar-width: thin;
+      scrollbar-color: #888 #f1f1f1;
+    }
+
     textarea { width: 100%; height: 200px; font-family: monospace; }
     pre { background: #f4f4f4; padding: 10px; border: 1px solid #ddd; }
     .error { color: red; }
@@ -45,7 +67,7 @@ title: IDE
   <script>
     const editor = CodeMirror.fromTextArea(document.getElementById('code'), {
       mode: 'python',
-      theme: 'material',  // <<<=== add this
+      theme: 'material',
       lineNumbers: true,
       indentUnit: 4,
       tabSize: 4,
@@ -72,7 +94,6 @@ title: IDE
         indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/"
       });
       console.log("Pyodide loaded");
-      // Load external libraries
       await pyodide.loadPackage(["numpy", "matplotlib"]);
       console.log("numpy and matplotlib loaded");
     }
@@ -80,7 +101,7 @@ title: IDE
     loadPyodideAndRun();
 
     async function runCode() {
-      const code = editor.getValue();  // <<==== get code from CodeMirror
+      const code = editor.getValue();
       const outputEl = document.getElementById("output");
       const errorEl = document.getElementById("error");
       const runBtn = document.getElementById("runBtn");
