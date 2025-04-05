@@ -145,7 +145,4 @@ title: Website
             }
         });
     </script>
-    <iframe src="https://courses.uit.edu.vn/">
-    </iframe>
-
 </body>
