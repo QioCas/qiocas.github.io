@@ -12,12 +12,14 @@ title: IDE
   <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/hint/show-hint.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/hint/show-hint.css">
   <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/hint/python-hint.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/edit/matchbrackets.js"></script>
 
   <style>
     .CodeMirror {
       border: 1px solid #ddd;
-      height: auto;
-      min-height: 200px;
+      height: 400px; /* Fixed height */
+      width: 800px;  /* Fixed width */
+      max-width: 100%; /* Ensures it doesn't exceed container */
       font-family: monospace;
       font-size: 14px;
       line-height: 1.5;
@@ -25,7 +27,7 @@ title: IDE
 
     .CodeMirror-scroll {
       overflow: auto !important;
-      max-height: 400px;
+      height: 100%; /* Takes full height of container */
     }
 
     .CodeMirror::-webkit-scrollbar {
@@ -52,12 +54,20 @@ title: IDE
       scrollbar-color: #888 #f1f1f1;
     }
 
-    textarea { width: 100%; height: 200px; font-family: monospace; }
-    pre { background: #f4f4f4; padding: 10px; border: 1px solid #ddd; }
+    textarea { width: 100%; height: 200px; font-family: monospace; display: none; } /* Hide original textarea */
+    pre { background: #f4f4f4; padding: 10px; border: 1px solid #ddd; width: 800px; max-width: 100%; }
     .error { color: red; }
     button { margin: 10px 0; }
     #status { font-style: italic; color: #555; }
     button:disabled { opacity: 0.5; }
+    
+    /* Optional: Center the editor */
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
 </head>
@@ -75,7 +85,30 @@ title: IDE
       autoCloseBrackets: true,
       matchBrackets: true,
       extraKeys: {
-        "Ctrl-Space": "autocomplete"
+        "Ctrl-Space": "autocomplete",
+        "Ctrl-Enter": function(cm) { runCode(); },
+        "Alt-Up": "swapLineUp",
+        "Alt-Down": "swapLineDown"
+      }
+    });
+
+    editor.on("inputRead", function(cm, change) {
+      if (change.origin !== "paste") {
+        const cursor = cm.getCursor();
+        const token = cm.getTokenAt(cursor);
+        if (/[a-zA-Z.]/.test(change.text[0]) && !/\d/.test(token.string)) {
+          CodeMirror.commands.autocomplete(cm, null, {
+            completeSingle: false
+          });
+        }
+      }
+    });
+
+    editor.on("change", function(cm, change) {
+      if (change.origin === "+input" && !cm.state.completionActive) {
+        setTimeout(function() {
+          cm.execCommand("autocomplete");
+        }, 100);
       }
     });
   </script>
