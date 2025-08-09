@@ -14,11 +14,15 @@ Cũng không hẳn là mình không được gì. Nửa năm cuối năm nhất 
 Tuy nhiên, mình vẫn cảm giác mình vẫn chưa thật sự cố gắng. 
 
 Mình vẫn chưa bắt đầu học ngoại ngữ, 
-	 vẫn chưa ăn uống điều độ, 
-	 vẫn chưa ngủ đúng giờ giấc, 
-	 vẫn chưa kết thêm được bạn mới, 
-	 vẫn chưa tập trung vào mục tiêu đã đặt ra.
 
-Mình cũng tự ngẫm lại và biết được tại sao mình lại như vậy. Vì thế nên mình hi vọng một năm tới sẽ là một bước tiếp xa hơn.
+vẫn chưa ăn uống điều độ, 
+
+vẫn chưa ngủ đúng giờ giấc, 
+
+vẫn chưa kết thêm được bạn mới, 
+
+vẫn chưa tập trung vào mục tiêu đã đặt ra.
+
+Mình cũng tự ngẫm lại và biết được tại sao mình lại như vậy. Vì thế nên mình hi vọng một năm tới sẽ là một bước tiến xa hơn.
 
 > Chậm lại để tiến xa hơn.
