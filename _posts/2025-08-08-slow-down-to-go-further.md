@@ -11,18 +11,18 @@ Mình đã làm gì trong nửa năm nay vậy... Mình cũng không biết nữ
 
 Cũng không hẳn là mình không được gì. Nửa năm cuối năm nhất mình vẫn học thêm những thứ mới và đạt điểm số tốt trong các môn học. 
 
-Tuy nhiên, mình vẫn cảm giác mình vẫn chưa thật sự cố gắng. 
+... Tuy nhiên, mình vẫn cảm giác mình vẫn chưa thật sự cố gắng. 
 
-Mình vẫn chưa bắt đầu học ngoại ngữ, 
+Mình vẫn chưa bắt đầu học ngoại ngữ;
 
-vẫn chưa ăn uống điều độ, 
+Mình vẫn chưa ăn uống điều độ;
 
-vẫn chưa ngủ đúng giờ giấc, 
+Mình chưa ngủ đúng giờ giấc;
 
-vẫn chưa kết thêm được bạn mới, 
+Mình vẫn chưa kết thêm được bạn mới;
 
-vẫn chưa tập trung vào mục tiêu đã đặt ra.
+Mình vẫn chưa tập trung vào mục tiêu đã đặt ra.
 
-Mình cũng tự ngẫm lại và biết được tại sao mình lại như vậy. Vì thế nên mình hi vọng một năm tới sẽ là một bước tiến xa hơn.
+Mình cũng tự ngẫm lại và biết được tại sao mình lại như vậy. Vì thế nên, mình hi vọng một năm tới sẽ là một bước tiến xa hơn.
 
 > Chậm lại để tiến xa hơn.
