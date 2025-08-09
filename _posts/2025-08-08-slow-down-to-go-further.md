@@ -1,6 +1,6 @@
 ---
 layout: post
-cover-img: "../assets/img/slow-down-to-go-further/rain.jpeg"
+cover-img: "../assets/img/slow-down-to-go-further/background.jpg"
 title: Chậm lại để tiến xa hơn
 tags: [diary, uni]
 ---
