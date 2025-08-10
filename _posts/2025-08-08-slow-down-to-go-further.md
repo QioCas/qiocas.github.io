@@ -3,15 +3,16 @@ layout: post
 cover-img: "../assets/img/slow-down-to-go-further/background.jpg"
 title: Chậm lại để tiến xa hơn
 tags: [diary, uni]
+comments: true
 ---
 
 Lần cuối mình viết blog là khi nào nhỉ? Chắc là nửa năm trước.
 
-Mình đã làm gì trong nửa năm nay vậy... Mình cũng không biết nữa. 
+Mình đã làm gì trong nửa năm nay vậy... Mình cũng không biết nữa.
 
-Cũng không hẳn là mình không được gì. Nửa năm cuối năm nhất mình vẫn học thêm những thứ mới và đạt điểm số tốt trong các môn học. 
+Cũng không hẳn là mình không được gì. Nửa năm cuối năm nhất mình vẫn học thêm những thứ mới và đạt điểm số tốt trong các môn học.
 
-... Tuy nhiên, mình vẫn cảm giác mình vẫn chưa thật sự cố gắng. 
+... Tuy nhiên, mình vẫn cảm giác mình vẫn chưa thật sự cố gắng.
 
 Mình vẫn chưa bắt đầu học ngoại ngữ;
 
