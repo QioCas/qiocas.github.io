@@ -103,7 +103,7 @@ title: Topics
       let i = 0;
       function openNext() {
         if (i >= topics[topicIndex].videos.length) return;
-        let win = window.open(topics[topicIndex].videos[i], "_blank");
+        let win = window.open(topics[topicIndex].videos[i]);
         setTimeout(() => {
           win.close();
           i++;
