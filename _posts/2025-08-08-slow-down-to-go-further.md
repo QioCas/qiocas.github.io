@@ -3,7 +3,6 @@ layout: post
 cover-img: "../assets/img/slow-down-to-go-further/background.jpg"
 title: Chậm lại để tiến xa hơn
 tags: [diary, uni]
-comments: true
 ---
 
 Lần cuối mình viết blog là khi nào nhỉ? Chắc là nửa năm trước.
