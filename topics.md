@@ -95,17 +95,22 @@ title: Topics
     }
 
     function autoPlay(topicIndex) {
-      const delay = parseInt(prompt("Seconds per video:", "5"));
+      const delay = parseInt(prompt("Seconds per video:", "30"));
       if (!delay || delay < 5) {
         alert("Please enter at least 5 seconds.");
         return;
       }
-      for(let i = 0; i < topics[topicIndex].videos.length; i++) {
+      let i = 0;
+      function openNext() {
+        if (i >= topics[topicIndex].videos.length) return;
         let win = window.open(topics[topicIndex].videos[i]);
-        await setTimeout(() => {
-          win.close();
+        win.close();
+        setTimeout(() => {
+          i++;
+          openNext();
         }, delay * 1000);
       }
+      openNext();
     }
 
     function renderTopics() {
