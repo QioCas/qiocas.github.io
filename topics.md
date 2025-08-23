@@ -102,7 +102,7 @@ title: Topics
       }
       for(let i = 0; i < topics[topicIndex].videos.length; i++) {
         let win = window.open(topics[topicIndex].videos[i]);
-        setTimeout(() => {
+        await setTimeout(() => {
           win.close();
         }, delay * 1000);
       }
