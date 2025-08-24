@@ -102,7 +102,7 @@ title: Topics
         return;
       }
       const videos = topics[topicIndex].videos;
-      const url = "player.html?videos=" + encodeURIComponent(JSON.stringify(videos)) + "&delay=" + delay;
+      const url = "/player.html?videos=" + encodeURIComponent(JSON.stringify(videos)) + "&delay=" + delay;
       window.open(url, "_blank");
     }
 
