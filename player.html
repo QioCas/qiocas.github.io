@@ -59,7 +59,7 @@
       // This line is for debugging purposes
       console.log(url); 
       
-      document.getElementById("player").src = url.replace("watch?v=", "embed/") + "?autoplay=1";
+      document.getElementById("player").src = url + "?autoplay=1";
       document.getElementById("status").innerText = `Playing ${i+1}/${videos.length}`;
       
       timer = setTimeout(() => {
