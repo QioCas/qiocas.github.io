@@ -127,12 +127,13 @@ title: Topics
       let win = null;
       function step() {
         if (i >= urls.length) {
-          // done — optionally close the popup; comment out if you want it to stay open
-          try { win.close(); } catch {}
           return;
         }
         win = window.open(urls[i], "_blank");
         i++;
+        if(confirm("Close the tab?")) {
+          win.close();
+        }
         setTimeout(() => {
           step();
         }, delay * 1000);
