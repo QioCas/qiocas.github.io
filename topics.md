@@ -123,16 +123,10 @@ title: Topics
       const urls = topics[topicIndex].videos.map(normalizeYouTubeUrl);
       if (!urls.length) return;
 
-      // Open a single popup (must be user-click initiated)
       const pop = window.open("about:blank", "_blank");
-      if (!pop) {
-        alert("Popup blocked. Please allow pop-ups for this site.");
-        return;
-      }
 
       let i = 0;
       function step() {
-        if (pop.closed) return; // user closed it
         if (i >= urls.length) {
           // done — optionally close the popup; comment out if you want it to stay open
           try { pop.close(); } catch {}
