@@ -88,25 +88,29 @@ title: Topics
         saveTopics();
       }
     }
-    
+
     function deleteVideo(topicIndex, videoIndex) {
       topics[topicIndex].videos.splice(videoIndex, 1);
       saveTopics();
     }
 
-
     function autoPlay(topicIndex) {
-      const delay = parseInt(prompt("Seconds per video:", "30"));
+      const delay = parseInt(prompt("Seconds per video:", "5"));
       if (!delay || delay < 5) {
         alert("Please enter at least 5 seconds.");
         return;
       }
-      const videos = topics[topicIndex].videos;
-      const url = "/player.html?videos=" + encodeURIComponent(JSON.stringify(videos)) + "&delay=" + delay;
-      window.open(url, "_blank");
+      function PlayVideo(i) {
+        if(i >= topics[topicIndex].videos.lenght) return;
+        let win = window.open(topics[topicIndex].videos[i], "_blank");
+
+        setTimeout(() => {
+          win.close();
+          PlayVideo(i+1);
+        }, delay * 1000);
+      }
+      PlayVideo(0);
     }
-
-
 
     function renderTopics() {
       const container = document.getElementById('topics');
