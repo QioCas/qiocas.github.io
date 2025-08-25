@@ -128,7 +128,7 @@ title: Topics
       function step() {
         if (i >= urls.length) {
           return;
-        }b
+        }
         win = window.open(urls[i], "_blank", 'popup=1');
         i++;
         setTimeout(() => {
