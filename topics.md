@@ -94,22 +94,62 @@ title: Topics
       saveTopics();
     }
 
+    // Optional: normalize Shorts / youtu.be to watch?v=ID
+    function normalizeYouTubeUrl(u) {
+      try {
+        const url = new URL(u);
+        if (url.hostname === "youtu.be") {
+          const id = url.pathname.slice(1);
+          return `https://www.youtube.com/watch?v=${id}`;
+        }
+        if (url.pathname.startsWith("/shorts/")) {
+          const id = url.pathname.split("/")[2] || "";
+          const t = url.searchParams.get("t");
+          return `https://www.youtube.com/watch?v=${id}${t ? `&t=${t}` : ""}`;
+        }
+        return u;
+      } catch {
+        return u;
+      }
+    }
+
     function autoPlay(topicIndex) {
-      const delay = parseInt(prompt("Seconds per video:", "5"));
-      if (!delay || delay < 5) {
+      const delay = parseInt(prompt("Seconds per video:", "30"), 10);
+      if (!delay || isNaN(delay) || delay < 5) {
         alert("Please enter at least 5 seconds.");
         return;
       }
-      function PlayVideo(i) {
-        if(i >= topics[topicIndex].videos.length) return;
-        let win = window.open(topics[topicIndex].videos[i], "_blank");
 
-        setTimeout(() => {
-          win.close();
-          PlayVideo(i+1);
-        }, delay * 1000);
+      const urls = topics[topicIndex].videos.map(normalizeYouTubeUrl);
+      if (!urls.length) return;
+
+      // Open a single popup (must be user-click initiated)
+      const pop = window.open("about:blank", "_blank");
+      if (!pop) {
+        alert("Popup blocked. Please allow pop-ups for this site.");
+        return;
       }
-      PlayVideo(0);
+
+      let i = 0;
+      function step() {
+        if (pop.closed) return; // user closed it
+        if (i >= urls.length) {
+          // done — optionally close the popup; comment out if you want it to stay open
+          try { pop.close(); } catch {}
+          return;
+        }
+        try {
+          // Navigate the same popup to the next video
+          pop.location.href = urls[i];
+        } catch (e) {
+          // Fallback: if navigation is blocked for some reason
+          window.open(urls[i], "_blank");
+        }
+        i++;
+        setTimeout(step, delay * 1000);
+      }
+
+      step();
     }
 
     function renderTopics() {
