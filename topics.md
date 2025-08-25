@@ -123,22 +123,15 @@ title: Topics
       const urls = topics[topicIndex].videos.map(normalizeYouTubeUrl);
       if (!urls.length) return;
 
-      const pop = window.open("about:blank", "_blank");
-
       let i = 0;
+      let win = null;
       function step() {
         if (i >= urls.length) {
           // done — optionally close the popup; comment out if you want it to stay open
-          try { pop.close(); } catch {}
+          try { win.close(); } catch {}
           return;
         }
-        try {
-          // Navigate the same popup to the next video
-          pop.location.href = urls[i];
-        } catch (e) {
-          // Fallback: if navigation is blocked for some reason
-          window.open(urls[i], "_blank");
-        }
+        win = window.open(urls[i], "_blank");
         i++;
         setTimeout(() => {
           step();
