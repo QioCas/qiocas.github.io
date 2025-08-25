@@ -129,12 +129,12 @@ title: Topics
         if (i >= urls.length) {
           return;
         }
-        win = window.open(urls[i], "_blank");
+        win = window.open(urls[i], "_blank", 'popup=1');
         i++;
-        if(confirm("Close the tab?")) {
-          win.close();
-        }
         setTimeout(() => {
+          if(confirm("Close the tab?")) {
+            win.close();
+          }
           step();
         }, delay * 1000);
       };
