@@ -101,7 +101,7 @@ title: Topics
         return;
       }
       function PlayVideo(i) {
-        if(i >= topics[topicIndex].videos.lenght) return;
+        if(i >= topics[topicIndex].videos.length) return;
         let win = window.open(topics[topicIndex].videos[i], "_blank");
 
         setTimeout(() => {
