@@ -146,9 +146,10 @@ title: Topics
           window.open(urls[i], "_blank");
         }
         i++;
-        setTimeout(step, delay * 1000);
-      }
-
+        setTimeout(() => {
+          step();
+        }, delay * 1000);
+      };
       step();
     }
 
