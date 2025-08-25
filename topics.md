@@ -124,12 +124,11 @@ title: Topics
       if (!urls.length) return;
 
       let i = 0;
-      let win = null;
       function step() {
         if (i >= urls.length) {
           return;
         }
-        win = window.open(urls[i], "_blank", 'popup=1');
+        let win = window.open(urls[i], "_blank");
         i++;
         setTimeout(() => {
           win.close();
