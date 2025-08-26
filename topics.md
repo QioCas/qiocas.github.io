@@ -129,8 +129,10 @@ title: Topics
           return;
         }
         let win = window.open(urls[i], "_blank");
+
         i++;
         setTimeout(() => {
+          win = window.open("about:blank", "_self");
           win.close();
           step();
         }, delay * 1000);
