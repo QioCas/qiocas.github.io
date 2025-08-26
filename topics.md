@@ -127,7 +127,7 @@ title: Topics
       let i = 0;
       function step() {
         if (i >= urls.length) return;
-        win.open(urls[i], "_self");
+        win.location.href = urls[i];
         i++;
         setTimeout(() => {
           win.close();
