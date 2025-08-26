@@ -3,7 +3,9 @@ layout: page
 title: Topics
 ---
 
-<head>
+Trang này vẫn chưa được dev xong.
+
+<!-- <head>
   <meta charset="UTF-8">
   <title>Topics Dashboard</title>
   <style>
@@ -133,4 +135,4 @@ title: Topics
 
     renderTopics();
   </script>
-</body>
+</body> -->
