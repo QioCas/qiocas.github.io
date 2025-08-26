@@ -26,6 +26,12 @@ title: Topics
     .video-card p { margin:6px 0 0; font-size:0.9em; color:#333; }
     #autoPlayBtn { margin-top: 10px; padding:8px 16px; background:#007bff; color:#fff; border:none; border-radius:6px; cursor:pointer; }
     #autoPlayBtn:hover { background:#0056b3; }
+
+    /* Add topic form */
+    #addTopicForm { margin-top: 30px; border-top:1px solid #ccc; padding-top:20px; }
+    #addTopicForm input, #addTopicForm textarea { width:100%; padding:8px; margin:6px 0; }
+    #addTopicForm button { padding:8px 16px; background:green; color:#fff; border:none; border-radius:6px; cursor:pointer; }
+    #addTopicForm button:hover { background:darkgreen; }
   </style>
 </head>
 <body>
@@ -42,9 +48,17 @@ title: Topics
     </div>
   </div>
 
+  <!-- Add Topic -->
+  <div id="addTopicForm">
+    <h2>Add New Topic</h2>
+    <input type="text" id="topicName" placeholder="Topic Name">
+    <textarea id="topicVideos" placeholder="Enter YouTube links separated by new lines"></textarea>
+    <button onclick="addTopic()">Add Topic</button>
+  </div>
+
   <script>
-    // Example topics data (replace with yours)
-    const topics = [
+    // Load topics from localStorage
+    let topics = JSON.parse(localStorage.getItem("topics")) || [
       {
         name: "Math Basics",
         videos: [
@@ -68,16 +82,23 @@ title: Topics
     const videoList = document.getElementById("videoList");
     const autoPlayBtn = document.getElementById("autoPlayBtn");
 
+    function saveTopics() {
+      localStorage.setItem("topics", JSON.stringify(topics));
+    }
+
     // Render topics
-    topics.forEach((t, idx) => {
-      const li = document.createElement("li");
-      const link = document.createElement("a");
-      link.textContent = t.name;
-      link.className = "topic-link";
-      link.onclick = () => openTopic(idx);
-      li.appendChild(link);
-      topicList.appendChild(li);
-    });
+    function renderTopics() {
+      topicList.innerHTML = '';
+      topics.forEach((t, idx) => {
+        const li = document.createElement("li");
+        const link = document.createElement("a");
+        link.textContent = t.name;
+        link.className = "topic-link";
+        link.onclick = () => openTopic(idx);
+        li.appendChild(link);
+        topicList.appendChild(li);
+      });
+    }
 
     // Fetch metadata & show modal
     async function openTopic(topicIndex) {
@@ -134,5 +155,25 @@ title: Topics
       }
       step();
     }
+
+    // Add new topic
+    function addTopic() {
+      const name = document.getElementById("topicName").value.trim();
+      const videos = document.getElementById("topicVideos").value.trim().split("\n").map(v => v.trim()).filter(v => v);
+
+      if (!name || videos.length === 0) {
+        alert("Please enter topic name and at least one video URL.");
+        return;
+      }
+
+      topics.push({ name, videos });
+      saveTopics();
+      renderTopics();
+
+      document.getElementById("topicName").value = "";
+      document.getElementById("topicVideos").value = "";
+    }
+
+    renderTopics();
   </script>
 </body>
