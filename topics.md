@@ -123,16 +123,13 @@ title: Topics
       const urls = topics[topicIndex].videos.map(normalizeYouTubeUrl);
       if (!urls.length) return;
 
+      let win = window.open("about:blank", "_blank");
       let i = 0;
       function step() {
-        if (i >= urls.length) {
-          return;
-        }
-        let win = window.open(urls[i], "_blank");
-
+        if (i >= urls.length) return;
+        win.open(urls[i], "_self");
         i++;
         setTimeout(() => {
-          win = window.open("about:blank", "_self");
           win.close();
           step();
         }, delay * 1000);
