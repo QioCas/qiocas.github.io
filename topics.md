@@ -94,25 +94,6 @@ title: Topics
       saveTopics();
     }
 
-    // Optional: normalize Shorts / youtu.be to watch?v=ID
-    function normalizeYouTubeUrl(u) {
-      try {
-        const url = new URL(u);
-        if (url.hostname === "youtu.be") {
-          const id = url.pathname.slice(1);
-          return `https://www.youtube.com/watch?v=${id}`;
-        }
-        if (url.pathname.startsWith("/shorts/")) {
-          const id = url.pathname.split("/")[2] || "";
-          const t = url.searchParams.get("t");
-          return `https://www.youtube.com/watch?v=${id}${t ? `&t=${t}` : ""}`;
-        }
-        return u;
-      } catch {
-        return u;
-      }
-    }
-
     function autoPlay(topicIndex) {
       const delay = parseInt(prompt("Seconds per video:", "30"), 10);
       if (!delay || isNaN(delay) || delay < 5) {
@@ -120,16 +101,16 @@ title: Topics
         return;
       }
 
-      const urls = topics[topicIndex].videos.map(normalizeYouTubeUrl);
+      const urls = topics[topicIndex].videos;
       if (!urls.length) return;
 
-      let win = window.open("about:blank", "_blank");
       let i = 0;
       function step() {
         if (i >= urls.length) return;
-        win.location.href = urls[i];
+        let win = window.open(urls[i], "_blank");
         i++;
         setTimeout(() => {
+          // PS: For some reason, it doesn't work on my pc but it still works on mobile.
           win.close();
           step();
         }, delay * 1000);
