@@ -21,9 +21,9 @@ Nhưng dù sao thì, bằng một cách nào đó, nó lại gắn liền với 
 
 Thứ nhất, mình không gay.
 
-Thứ hai, mình không thề dùng nó để dụ con trai hay gì cả. 
+Thứ hai, mình không hề dùng nó để dụ con trai hay gì cả. 
 
-Cuối cùng, nó chỉ là ngẫu nhiên. Ý mình là việc xuất hiện cái tên này.
+Cuối cùng, nó chỉ đơn giản là ngẫu nhiên. Ý mình là việc xuất hiện cái tên này.
 
 ---
 
