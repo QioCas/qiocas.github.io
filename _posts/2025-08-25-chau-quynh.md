@@ -7,11 +7,11 @@ title: Châu Quỳnh
 
 Đó là câu hỏi mà mọi người hay thắc mắc khi thấy tên Facebook của mình như vậy.
 
-Câu trả lời ngắn gọn là "Không là ai cả".
+Câu trả lời ngắn gọn là "**Không là ai cả**".
 
 Nó không phải một người nào đó mà mình đặt theo hay một nhân vật nào đó mà mình tự tưởng ra.
 
-Nó chỉ là một cái đơn giản là một cái tên. Một cái tên có liên quan với một số chuyện trong quá khứ của mình.
+Nó chỉ đơn giản là một cái tên. Một cái tên có liên quan với một số chuyện trong quá khứ của mình.
 
 Nhưng dù sao thì, bằng một cách nào đó, nó lại gắn liền với mình và các bạn học hay gọi mình bằng cái tên đó.
 
@@ -36,4 +36,4 @@ Với những người thân hoặc những người tiếp xúc với mình ngo
 
 Các bạn học cũng có lúc gọi mình là Châu Quỳnh hoặc Quỳnh (Mà thật ra tên là Châu cơ, Quỳnh chỉ là tên lót).
 
-Với mình thì, tên nào cũng được.
+Với mình thì, tên nào cũng được miễn bạn thấy thoải mái.
