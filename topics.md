@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Topics
-over-img: "../assets/img/sad-cat.jpeg"
+cover-img: "../assets/img/sad-cat.jpeg"
 ---
 
 Trang này vẫn chưa được dev xong.
