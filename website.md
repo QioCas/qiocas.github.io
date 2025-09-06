@@ -60,9 +60,12 @@ title: Website
             { name: "Course", url: "https://courses.uit.edu.vn/", category: "Study" },
             { name: "Student", url: "https://student.uit.edu.vn/", category: "Study" },
             { name: "DRL", url: "https://drl.uit.edu.vn/", category: "Study" },
+            { name: "Calendar", url: "https://calendar.google.com/calendar/u/0/r", category: "Study" },
+            
             // Chatbot
             { name: "ChatGPT", url: "https://chatgpt.com/", category: "Chatbot" },
             { name: "Grok", url: "https://grok.com/", category: "Chatbot" },
+            { name: "Mistral", url: "https://chat.mistral.ai/chat", category: "Chatbot" },
             // Wibu
             { name: "Mangadex", url: "https://mangadex.org/", category: "Wibu" },
             { name: "LN", url: "https://ln.hako.vn/", category: "Wibu" },
