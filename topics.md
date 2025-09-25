@@ -2,10 +2,12 @@
 layout: page
 title: Topics
 ---
+<div class="text-center">
 
-Trang này vẫn chưa được dev xong.
+  <h3>Trang này vẫn chưa được dev xong.</h3>
 
-<img src="{{ 'assets/img/メンヘラ.png' | relative_url }}" alt="Not found" />
+  <img src="{{ 'assets/img/メンヘラ.png' | relative_url }}" alt="Not found" />
+</div>
 
 <!-- <head>
   <meta charset="UTF-8">
