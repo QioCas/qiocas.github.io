@@ -1,10 +1,11 @@
 ---
 layout: page
 title: Topics
-cover-img: "../assets/img/sad-cat.jpeg"
 ---
 
 Trang này vẫn chưa được dev xong.
+
+<img src="{{ 'assets/img/メンヘラ.png' | relative_url }}" alt="Not found" />
 
 <!-- <head>
   <meta charset="UTF-8">
