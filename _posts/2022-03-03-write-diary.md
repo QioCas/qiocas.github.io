@@ -2,7 +2,7 @@
 layout: post
 title: Viết nhật ký
 cover-img: "../assets/img/write-diary/background.jpeg"
-tags: [dairy, high-school]
+tags: [diary, look-back, high-school]
 ---
 
 Vào giờ ra chơi nào đó năm tôi học lớp 10, khi đang đi mua nước ở văn phòng phẩm, tôi thấy trong tủ kính có bán một số cuốn sổ note nhỏ. 

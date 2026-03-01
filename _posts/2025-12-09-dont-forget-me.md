@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Đừng quên tao nhé
-tags: [dairy, high-school]
+tags: [look-back, high-school]
 ---
 
 > Nếu sau này bọn mình học khác trường, bọn mày đừng có quên tao nhé?
