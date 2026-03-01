@@ -1,8 +1,8 @@
 ---
 layout: post
-title: Kỳ thi đầu tiên
+title: Hờ hững
 tags: [diary, high-school]
 ---
 
-Chuẩn bị về nhà sau hơn một tháng ở CBL, tôi hơ hẩng không biết một tháng tới mình sẽ ra sao.
+Chuẩn bị về nhà sau hơn một tháng ở CBL, tôi hờ hững không biết một tháng tới mình sẽ ra sao.
 
