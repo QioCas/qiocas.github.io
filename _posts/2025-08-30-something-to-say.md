@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Có điều muốn nói
-tags: [dairy, uni]
+tags: [diary, uni]
 ---
 
 Mình kể rất nhiều câu chuyện về cấp 3 cho thằng bạn cùng lớp đại học.

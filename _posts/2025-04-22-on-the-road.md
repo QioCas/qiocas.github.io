@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Trên con đường
-tags: [dairy, uni]
+tags: [diary, uni]
 ---
 
 Ngồi trò chuyện cùng thằng bạn ở quán cafe học bài, tui chợt nhớ tới cấp 3 của mình.
