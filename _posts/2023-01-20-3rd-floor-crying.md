@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Tiếng khóc tầng 3
-tags: [look-back, high-school]
+tags: [high-school, look-back]
 ---
 
 Dạo trên hành lang tầng hai từ đội tuyển về ktx cùng với mấy thằng đệ, tôi chợt nghe tiếng khóc từ phía trên mình.
