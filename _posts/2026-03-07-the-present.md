@@ -13,3 +13,4 @@ Có những điều muốn nói ra nhưng lại không biết nói như nào.
 Hiện tại, mình cảm giác chán nản và mất động lực để tiếp tục.
 
 Tuy nhiên, mình biết mình sẽ vượt qua được. Mình sẽ vượt qua để tiếp tục trở lại con đường mình vẫn đang theo đuổi.
+
