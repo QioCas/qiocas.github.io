@@ -51,9 +51,25 @@ full-width: true
 
   .flashcard-topic {
     max-width: 70%;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    font: inherit;
+    text-align: left;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .flashcard-topic:hover,
+  .flashcard-topic:focus {
+    color: var(--flash-text);
+    outline: none;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 
   .flashcard-card {
@@ -302,11 +318,12 @@ full-width: true
 
 <div class="flashcard-app" id="flashcard-app">
   <main class="flashcard-study" aria-label="Flashcard">
+    <div class="flashcard-card-meta">
+      <button class="flashcard-topic" id="flashcard-active-topic" type="button" title="Đổi topic">English</button>
+      <span id="flashcard-progress">0 / 0</span>
+    </div>
+
     <button class="flashcard-card" id="flashcard-card" type="button">
-      <span class="flashcard-card-meta">
-        <span class="flashcard-topic" id="flashcard-active-topic">English</span>
-        <span id="flashcard-progress">0 / 0</span>
-      </span>
       <span class="flashcard-card-text" id="flashcard-card-text">
         <span class="flashcard-empty">
           <strong>Chưa có flashcard</strong>
@@ -688,6 +705,17 @@ full-width: true
       render();
     }
 
+    function switchToNextTopic() {
+      if (!settings.topics.length) return;
+      var currentTopicIndex = settings.topics.indexOf(settings.activeTopic);
+      var nextTopicIndex = currentTopicIndex === -1 ? 0 : (currentTopicIndex + 1) % settings.topics.length;
+      settings.activeTopic = settings.topics[nextTopicIndex];
+      currentCardId = "";
+      showingBack = false;
+      saveAll();
+      render();
+    }
+
     function flipCard() {
       if (!topicCards().length) return;
       showingBack = !showingBack;
@@ -745,6 +773,7 @@ full-width: true
     deleteTopicButton.addEventListener("click", deleteTopic);
     deleteTopicSelect.addEventListener("change", updateDeleteTopicState);
     studyTopicSelect.addEventListener("change", changeStudyTopic);
+    activeTopicLabel.addEventListener("click", switchToNextTopic);
     cardButton.addEventListener("click", flipCard);
     closeSettingsButton.addEventListener("click", closeSettings);
     closeCreateButton.addEventListener("click", closeCreate);
