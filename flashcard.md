@@ -5,66 +5,192 @@ full-width: true
 ---
 
 <style>
+  .header-section,
+  body > footer {
+    display: none;
+  }
+
+  main.container-fluid {
+    padding-top: 1.5rem;
+  }
+
   .flashcard-app {
-    --card-bg: #202124;
-    --card-bg-soft: #24272c;
-    --card-border: #3a3d44;
-    --card-border-strong: #4f5664;
-    --flash-accent: #139ee0;
-    --flash-accent-2: #46c28d;
-    --flash-danger: #ef6b73;
+    --flash-bg: #18191a;
+    --flash-surface: #202124;
+    --flash-surface-2: #242526;
+    --flash-border: #393a3b;
+    --flash-border-strong: #555b66;
+    --flash-text: #e4e6eb;
     --flash-muted: #a9b0bb;
-    max-width: 1120px;
-    margin: 0 auto 3rem;
-    color: #e4e6eb;
-  }
-
-  .flashcard-shell {
+    --flash-accent: #139ee0;
+    --flash-danger: #ef6b73;
+    min-height: 68vh;
     display: grid;
-    grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
-    gap: 1.25rem;
-    align-items: start;
+    place-items: center;
+    color: var(--flash-text);
   }
 
-  .flashcard-panel,
-  .flashcard-stage {
-    border: 1px solid var(--card-border);
+  .flashcard-study {
+    width: min(760px, calc(100vw - 2rem));
+  }
+
+  .flashcard-card-meta {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--flash-muted);
+    font-size: 0.9rem;
+    font-weight: 700;
+    pointer-events: none;
+  }
+
+  .flashcard-topic {
+    max-width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .flashcard-card {
+    position: relative;
+    width: 100%;
+    min-height: clamp(340px, 52vh, 520px);
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--flash-border);
     border-radius: 8px;
-    background: var(--card-bg);
+    background: var(--flash-surface);
+    color: #ffffff;
+    padding: clamp(1.2rem, 5vw, 3.5rem);
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
   }
 
-  .flashcard-panel {
+  .flashcard-card:hover,
+  .flashcard-card:focus {
+    border-color: var(--flash-accent);
+    outline: none;
+  }
+
+  .flashcard-card-text {
+    display: block;
+    width: 100%;
+    font-size: clamp(1.55rem, 4.5vw, 2.8rem);
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+
+  .flashcard-empty {
+    display: grid;
+    gap: 0.6rem;
+    color: var(--flash-muted);
+    font-size: clamp(1.05rem, 3vw, 1.35rem);
+  }
+
+  .flashcard-empty strong {
+    color: var(--flash-text);
+    font-size: clamp(1.45rem, 4vw, 2.2rem);
+  }
+
+  .flashcard-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: none;
+    place-items: center;
+    background: rgba(0, 0, 0, 0.58);
     padding: 1rem;
   }
 
-  .flashcard-panel h2,
-  .flashcard-stage h2 {
-    margin: 0 0 0.85rem;
-    font-size: 1.1rem;
+  .flashcard-modal.is-open {
+    display: grid;
+  }
+
+  .flashcard-settings {
+    width: min(720px, 100%);
+    max-height: min(760px, calc(100vh - 2rem));
+    overflow: auto;
+    border: 1px solid var(--flash-border);
+    border-radius: 8px;
+    background: var(--flash-surface);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+  }
+
+  .flashcard-settings-header,
+  .flashcard-settings-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--flash-border);
+  }
+
+  .flashcard-settings-footer {
+    border-top: 1px solid var(--flash-border);
+    border-bottom: 0;
+  }
+
+  .flashcard-settings-title {
+    margin: 0;
+    font-size: 1.15rem;
     line-height: 1.3;
+  }
+
+  .flashcard-settings-body {
+    display: grid;
+    gap: 1.25rem;
+    padding: 1rem;
+  }
+
+  .flashcard-section {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .flashcard-section h3 {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.3;
+  }
+
+  .flashcard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
   }
 
   .flashcard-field {
     display: grid;
     gap: 0.4rem;
-    margin-bottom: 0.9rem;
+  }
+
+  .flashcard-field.full {
+    grid-column: 1 / -1;
   }
 
   .flashcard-field label {
     margin: 0;
     color: var(--flash-muted);
-    font-size: 0.92rem;
-    font-weight: 600;
+    font-size: 0.9rem;
+    font-weight: 700;
   }
 
   .flashcard-field input,
+  .flashcard-field select,
   .flashcard-field textarea {
     width: 100%;
-    border: 1px solid var(--card-border);
+    border: 1px solid var(--flash-border);
     border-radius: 6px;
-    background: #18191a;
-    color: #e4e6eb;
-    padding: 0.75rem 0.8rem;
+    background: var(--flash-bg);
+    color: var(--flash-text);
+    padding: 0.72rem 0.78rem;
     font: inherit;
   }
 
@@ -74,26 +200,26 @@ full-width: true
   }
 
   .flashcard-field input:focus,
+  .flashcard-field select:focus,
   .flashcard-field textarea:focus {
     border-color: var(--flash-accent);
     box-shadow: 0 0 0 3px rgba(19, 158, 224, 0.16);
     outline: none;
   }
 
-  .flashcard-actions,
-  .flashcard-nav {
+  .flashcard-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
   }
 
   .flashcard-button {
-    min-height: 42px;
-    border: 1px solid var(--card-border-strong);
+    min-height: 40px;
+    border: 1px solid var(--flash-border-strong);
     border-radius: 6px;
-    background: var(--card-bg-soft);
-    color: #e4e6eb;
-    padding: 0.65rem 0.9rem;
+    background: var(--flash-surface-2);
+    color: var(--flash-text);
+    padding: 0.58rem 0.85rem;
     font-weight: 700;
     line-height: 1.1;
     cursor: pointer;
@@ -112,14 +238,15 @@ full-width: true
     color: #ffffff;
   }
 
-  .flashcard-button.success {
-    border-color: var(--flash-accent-2);
-    background: rgba(70, 194, 141, 0.14);
+  .flashcard-button.danger {
+    border-color: rgba(239, 107, 115, 0.75);
+    color: #ffd8dc;
   }
 
-  .flashcard-button.danger {
-    border-color: rgba(239, 107, 115, 0.7);
-    color: #ffd9dc;
+  .flashcard-button.icon {
+    width: 40px;
+    padding: 0;
+    font-size: 1.25rem;
   }
 
   .flashcard-button:disabled {
@@ -127,218 +254,185 @@ full-width: true
     cursor: not-allowed;
   }
 
-  .flashcard-stage {
-    min-height: 520px;
-    padding: 1rem;
-  }
-
-  .flashcard-toolbar {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-  }
-
-  .flashcard-progress {
-    color: var(--flash-muted);
-    font-weight: 700;
-  }
-
-  .flashcard-topic {
-    display: inline-flex;
-    max-width: 100%;
-    margin-bottom: 0.8rem;
-    border: 1px solid rgba(70, 194, 141, 0.45);
-    border-radius: 999px;
-    color: #baf2d8;
-    padding: 0.25rem 0.65rem;
-    font-size: 0.85rem;
-    font-weight: 700;
-    overflow-wrap: anywhere;
-  }
-
-  .flashcard-card {
-    display: grid;
-    place-items: center;
-    min-height: 300px;
-    border: 1px solid var(--card-border);
-    border-radius: 8px;
-    background: #18191a;
-    padding: clamp(1rem, 4vw, 2rem);
-    text-align: center;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .flashcard-card:focus {
-    border-color: var(--flash-accent);
-    box-shadow: 0 0 0 3px rgba(19, 158, 224, 0.16);
-    outline: none;
-  }
-
-  .flashcard-card-text {
-    display: block;
-    width: 100%;
+  .flashcard-status {
+    min-height: 1.25rem;
     margin: 0;
-    color: #ffffff;
-    font-size: clamp(1.35rem, 2.4vw, 2rem);
-    line-height: 1.45;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-  }
-
-  .flashcard-side-label {
-    margin-top: 0.8rem;
     color: var(--flash-muted);
     font-size: 0.9rem;
   }
 
-  .flashcard-nav {
-    margin-top: 1rem;
-  }
+  @media (max-width: 640px) {
+    .flashcard-app {
+      min-height: 62vh;
+    }
 
-  .flashcard-empty {
-    display: grid;
-    place-items: center;
-    min-height: 300px;
-    border: 1px dashed var(--card-border-strong);
-    border-radius: 8px;
-    color: var(--flash-muted);
-    padding: 2rem;
-    text-align: center;
-  }
-
-  .flashcard-empty strong {
-    display: block;
-    margin-bottom: 0.4rem;
-    color: #e4e6eb;
-    font-size: 1.2rem;
-  }
-
-  .flashcard-status {
-    min-height: 1.35rem;
-    margin: 0.75rem 0 0;
-    color: var(--flash-muted);
-    font-size: 0.92rem;
-  }
-
-  @media (max-width: 820px) {
-    .flashcard-shell {
+    .flashcard-grid {
       grid-template-columns: 1fr;
     }
 
-    .flashcard-stage {
-      min-height: auto;
-    }
-
-    .flashcard-toolbar {
+    .flashcard-settings-header,
+    .flashcard-settings-footer {
       align-items: flex-start;
       flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .flashcard-actions,
-    .flashcard-nav {
-      width: 100%;
     }
 
     .flashcard-button {
-      flex: 1 1 140px;
+      flex: 1 1 130px;
+    }
+
+    .flashcard-button.icon {
+      flex: 0 0 40px;
     }
   }
 </style>
 
 <div class="flashcard-app" id="flashcard-app">
-  <div class="flashcard-shell">
-    <section class="flashcard-panel" aria-labelledby="flashcard-form-title">
-      <h2 id="flashcard-form-title">Thêm thẻ mới</h2>
-      <form id="flashcard-form">
-        <div class="flashcard-field">
-          <label for="flashcard-front">Mặt trước</label>
-          <textarea id="flashcard-front" name="front" required placeholder="Ví dụ: Binary search là gì?"></textarea>
-        </div>
-        <div class="flashcard-field">
-          <label for="flashcard-back">Mặt sau</label>
-          <textarea id="flashcard-back" name="back" required placeholder="Ví dụ: Kỹ thuật tìm kiếm trên dãy đã sắp xếp bằng cách chia đôi khoảng tìm kiếm."></textarea>
-        </div>
-        <div class="flashcard-field">
-          <label for="flashcard-topic">Topic</label>
-          <input id="flashcard-topic-input" name="topic" type="text" placeholder="Không bắt buộc">
-        </div>
-        <div class="flashcard-actions">
-          <button class="flashcard-button primary" type="submit">Thêm thẻ</button>
-          <button class="flashcard-button" id="flashcard-clear-form" type="button">Xóa form</button>
-        </div>
+  <main class="flashcard-study" aria-label="Flashcard">
+    <button class="flashcard-card" id="flashcard-card" type="button">
+      <span class="flashcard-card-meta">
+        <span class="flashcard-topic" id="flashcard-active-topic">English</span>
+        <span id="flashcard-progress">0 / 0</span>
+      </span>
+      <span class="flashcard-card-text" id="flashcard-card-text">
+        <span class="flashcard-empty">
+          <strong>Chưa có flashcard</strong>
+          <span>Mở Settings để tạo thẻ đầu tiên.</span>
+        </span>
+      </span>
+    </button>
+  </main>
+
+  <div class="flashcard-modal" id="flashcard-modal" role="dialog" aria-modal="true" aria-labelledby="flashcard-settings-title">
+    <section class="flashcard-settings">
+      <header class="flashcard-settings-header">
+        <h2 class="flashcard-settings-title" id="flashcard-settings-title">Settings</h2>
+        <button class="flashcard-button icon" id="flashcard-close-settings" type="button" aria-label="Đóng Settings">&times;</button>
+      </header>
+
+      <div class="flashcard-settings-body">
+        <section class="flashcard-section" aria-labelledby="flashcard-study-settings-title">
+          <h3 id="flashcard-study-settings-title">Topic đang học</h3>
+          <div class="flashcard-grid">
+            <div class="flashcard-field">
+              <label for="flashcard-study-topic">Topic</label>
+              <select id="flashcard-study-topic"></select>
+            </div>
+          </div>
+        </section>
+
+        <section class="flashcard-section" aria-labelledby="flashcard-create-title">
+          <h3 id="flashcard-create-title">Tạo flashcard</h3>
+          <form id="flashcard-form">
+            <div class="flashcard-grid">
+              <div class="flashcard-field full">
+                <label for="flashcard-front">Mặt trước</label>
+                <textarea id="flashcard-front" name="front" required placeholder="Ví dụ: abandon"></textarea>
+              </div>
+              <div class="flashcard-field full">
+                <label for="flashcard-back">Mặt sau</label>
+                <textarea id="flashcard-back" name="back" required placeholder="Ví dụ: từ bỏ, bỏ rơi"></textarea>
+              </div>
+              <div class="flashcard-field">
+                <label for="flashcard-card-topic">Topic</label>
+                <select id="flashcard-card-topic" name="topic" required></select>
+              </div>
+            </div>
+            <div class="flashcard-actions">
+              <button class="flashcard-button primary" type="submit">Thêm thẻ</button>
+              <button class="flashcard-button" id="flashcard-clear-form" type="button">Xóa form</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="flashcard-section" aria-labelledby="flashcard-topic-settings-title">
+          <h3 id="flashcard-topic-settings-title">Quản lý topic</h3>
+          <div class="flashcard-grid">
+            <div class="flashcard-field">
+              <label for="flashcard-new-topic">Topic mới</label>
+              <input id="flashcard-new-topic" type="text" placeholder="Ví dụ: Algorithms">
+            </div>
+            <div class="flashcard-field">
+              <label for="flashcard-delete-topic">Topic cần xóa</label>
+              <select id="flashcard-delete-topic"></select>
+            </div>
+          </div>
+          <div class="flashcard-actions">
+            <button class="flashcard-button" id="flashcard-add-topic" type="button">Thêm topic</button>
+            <button class="flashcard-button danger" id="flashcard-delete-topic-button" type="button">Xóa topic</button>
+          </div>
+        </section>
+      </div>
+
+      <footer class="flashcard-settings-footer">
         <p class="flashcard-status" id="flashcard-status" role="status" aria-live="polite"></p>
-      </form>
-    </section>
-
-    <section class="flashcard-stage" aria-labelledby="flashcard-study-title">
-      <div class="flashcard-toolbar">
-        <div>
-          <h2 id="flashcard-study-title">Ôn tập</h2>
-          <div class="flashcard-progress" id="flashcard-progress">0 / 0</div>
-        </div>
-        <div class="flashcard-actions">
-          <button class="flashcard-button success" id="flashcard-shuffle" type="button">Trộn thẻ</button>
-          <button class="flashcard-button danger" id="flashcard-delete" type="button">Xóa thẻ này</button>
-        </div>
-      </div>
-
-      <div id="flashcard-topic" class="flashcard-topic" hidden></div>
-
-      <div class="flashcard-empty" id="flashcard-empty">
-        <div>
-          <strong>Chưa có thẻ nào</strong>
-          Hãy thêm thẻ đầu tiên ở form bên trái. Dữ liệu sẽ được lưu trong trình duyệt này.
-        </div>
-      </div>
-
-      <button class="flashcard-card" id="flashcard-card" type="button" hidden>
-        <span class="flashcard-card-text" id="flashcard-card-text"></span>
-      </button>
-      <div class="flashcard-side-label" id="flashcard-side-label" hidden></div>
-
-      <div class="flashcard-nav">
-        <button class="flashcard-button" id="flashcard-prev" type="button">Thẻ trước</button>
-        <button class="flashcard-button primary" id="flashcard-flip" type="button">Lật thẻ</button>
-        <button class="flashcard-button" id="flashcard-next" type="button">Thẻ sau</button>
-      </div>
+        <button class="flashcard-button" id="flashcard-shuffle" type="button">Trộn thẻ trong topic</button>
+      </footer>
     </section>
   </div>
 </div>
 
 <script>
   (function () {
-    var storageKey = "qiocas.flashcards.v1";
+    var cardsKey = "qiocas.flashcards.v1";
+    var settingsKey = "qiocas.flashcards.settings.v1";
+    var defaultTopic = "English";
     var cards = [];
+    var settings = {
+      topics: [defaultTopic],
+      activeTopic: defaultTopic,
+      lastTopic: defaultTopic
+    };
     var currentIndex = 0;
     var showingBack = false;
+    var lastFocusedElement = null;
 
+    var cardButton = document.getElementById("flashcard-card");
+    var cardText = document.getElementById("flashcard-card-text");
+    var progress = document.getElementById("flashcard-progress");
+    var activeTopicLabel = document.getElementById("flashcard-active-topic");
+    var modal = document.getElementById("flashcard-modal");
+    var closeSettingsButton = document.getElementById("flashcard-close-settings");
+    var studyTopicSelect = document.getElementById("flashcard-study-topic");
     var form = document.getElementById("flashcard-form");
     var frontInput = document.getElementById("flashcard-front");
     var backInput = document.getElementById("flashcard-back");
-    var topicInput = document.getElementById("flashcard-topic-input");
+    var cardTopicSelect = document.getElementById("flashcard-card-topic");
     var clearFormButton = document.getElementById("flashcard-clear-form");
-    var status = document.getElementById("flashcard-status");
-    var progress = document.getElementById("flashcard-progress");
-    var topic = document.getElementById("flashcard-topic");
-    var empty = document.getElementById("flashcard-empty");
-    var cardButton = document.getElementById("flashcard-card");
-    var cardText = document.getElementById("flashcard-card-text");
-    var sideLabel = document.getElementById("flashcard-side-label");
-    var prevButton = document.getElementById("flashcard-prev");
-    var nextButton = document.getElementById("flashcard-next");
-    var flipButton = document.getElementById("flashcard-flip");
+    var newTopicInput = document.getElementById("flashcard-new-topic");
+    var addTopicButton = document.getElementById("flashcard-add-topic");
+    var deleteTopicSelect = document.getElementById("flashcard-delete-topic");
+    var deleteTopicButton = document.getElementById("flashcard-delete-topic-button");
     var shuffleButton = document.getElementById("flashcard-shuffle");
-    var deleteButton = document.getElementById("flashcard-delete");
+    var status = document.getElementById("flashcard-status");
 
     function createId() {
       if (window.crypto && typeof window.crypto.randomUUID === "function") {
         return window.crypto.randomUUID();
       }
       return String(Date.now()) + "-" + Math.random().toString(16).slice(2);
+    }
+
+    function uniqTopics(topics) {
+      var seen = {};
+      var cleanTopics = [];
+      (topics || []).forEach(function (topic) {
+        var value = typeof topic === "string" ? topic.trim() : "";
+        var key = value.toLowerCase();
+        if (!value || seen[key]) return;
+        seen[key] = true;
+        cleanTopics.push(value);
+      });
+      if (!seen[defaultTopic.toLowerCase()]) cleanTopics.unshift(defaultTopic);
+      return cleanTopics;
+    }
+
+    function normalizeTopic(topic) {
+      var value = typeof topic === "string" ? topic.trim() : "";
+      if (!value) return defaultTopic;
+      var found = settings.topics.find(function (item) {
+        return item.toLowerCase() === value.toLowerCase();
+      });
+      return found || value;
     }
 
     function normalizeCard(card) {
@@ -350,93 +444,127 @@ full-width: true
         id: typeof card.id === "string" && card.id ? card.id : createId(),
         front: front,
         back: back,
-        topic: typeof card.topic === "string" ? card.topic.trim() : "",
+        topic: normalizeTopic(card.topic),
         createdAt: typeof card.createdAt === "string" && card.createdAt ? card.createdAt : new Date().toISOString()
       };
-    }
-
-    function writeCardsToStorage(value) {
-      try {
-        window.localStorage.setItem(storageKey, JSON.stringify(value));
-      } catch (error) {
-        setStatus("Không thể lưu dữ liệu trong trình duyệt này.");
-      }
-    }
-
-    function loadCards() {
-      try {
-        var raw = window.localStorage.getItem(storageKey);
-        if (!raw) return [];
-        var parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed)) throw new Error("Flashcard data is not an array.");
-        return parsed.map(normalizeCard).filter(Boolean);
-      } catch (error) {
-        writeCardsToStorage([]);
-        return [];
-      }
-    }
-
-    function saveCards() {
-      writeCardsToStorage(cards);
     }
 
     function setStatus(message) {
       status.textContent = message || "";
     }
 
-    function clampIndex() {
-      if (!cards.length) {
+    function writeStorage(key, value) {
+      try {
+        window.localStorage.setItem(key, JSON.stringify(value));
+      } catch (error) {
+        setStatus("Không thể lưu dữ liệu trong trình duyệt này.");
+      }
+    }
+
+    function readStorage(key, fallback) {
+      try {
+        var raw = window.localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (error) {
+        writeStorage(key, fallback);
+        return fallback;
+      }
+    }
+
+    function loadSettings() {
+      var stored = readStorage(settingsKey, settings);
+      settings.topics = uniqTopics(stored.topics);
+      settings.activeTopic = normalizeTopic(stored.activeTopic);
+      settings.lastTopic = normalizeTopic(stored.lastTopic);
+      if (settings.topics.indexOf(settings.activeTopic) === -1) settings.activeTopic = defaultTopic;
+      if (settings.topics.indexOf(settings.lastTopic) === -1) settings.lastTopic = settings.activeTopic;
+    }
+
+    function loadCards() {
+      var stored = readStorage(cardsKey, []);
+      if (!Array.isArray(stored)) {
+        writeStorage(cardsKey, []);
+        return [];
+      }
+      return stored.map(normalizeCard).filter(Boolean);
+    }
+
+    function saveAll() {
+      writeStorage(cardsKey, cards);
+      writeStorage(settingsKey, settings);
+    }
+
+    function topicCards() {
+      return cards.filter(function (card) {
+        return card.topic === settings.activeTopic;
+      });
+    }
+
+    function clampIndex(list) {
+      if (!list.length) {
         currentIndex = 0;
         return;
       }
-      if (currentIndex < 0) currentIndex = cards.length - 1;
-      if (currentIndex >= cards.length) currentIndex = 0;
+      if (currentIndex < 0) currentIndex = list.length - 1;
+      if (currentIndex >= list.length) currentIndex = 0;
     }
 
-    function render() {
-      clampIndex();
-      var hasCards = cards.length > 0;
-      empty.hidden = hasCards;
-      cardButton.hidden = !hasCards;
-      sideLabel.hidden = !hasCards;
-      topic.hidden = true;
+    function fillSelect(select, selectedValue) {
+      select.innerHTML = "";
+      settings.topics.forEach(function (topic) {
+        var option = document.createElement("option");
+        option.value = topic;
+        option.textContent = topic;
+        if (topic === selectedValue) option.selected = true;
+        select.appendChild(option);
+      });
+    }
 
-      progress.textContent = hasCards ? String(currentIndex + 1) + " / " + String(cards.length) : "0 / 0";
+    function renderSettingsControls() {
+      fillSelect(studyTopicSelect, settings.activeTopic);
+      fillSelect(cardTopicSelect, settings.lastTopic);
+      fillSelect(deleteTopicSelect, settings.activeTopic);
+      updateDeleteTopicState();
+    }
 
-      prevButton.disabled = !hasCards;
-      nextButton.disabled = !hasCards;
-      flipButton.disabled = !hasCards;
-      shuffleButton.disabled = cards.length < 2;
-      deleteButton.disabled = !hasCards;
+    function updateDeleteTopicState() {
+      deleteTopicButton.disabled = settings.topics.length <= 1 || deleteTopicSelect.value === defaultTopic;
+    }
 
-      if (!hasCards) {
-        cardText.textContent = "";
-        sideLabel.textContent = "";
+    function renderCard() {
+      var list = topicCards();
+      clampIndex(list);
+      activeTopicLabel.textContent = settings.activeTopic;
+      progress.textContent = list.length ? String(currentIndex + 1) + " / " + String(list.length) : "0 / 0";
+
+      if (!list.length) {
+        cardText.innerHTML = '<span class="flashcard-empty"><strong>Chưa có flashcard</strong><span>Mở Settings để tạo thẻ cho topic này.</span></span>';
         return;
       }
 
-      var currentCard = cards[currentIndex];
+      var currentCard = list[currentIndex];
       cardText.textContent = showingBack ? currentCard.back : currentCard.front;
-      sideLabel.textContent = showingBack ? "Mặt sau" : "Mặt trước";
+    }
 
-      if (currentCard.topic) {
-        topic.textContent = currentCard.topic;
-        topic.hidden = false;
-      }
+    function render() {
+      renderSettingsControls();
+      renderCard();
     }
 
     function clearForm() {
       form.reset();
+      cardTopicSelect.value = settings.lastTopic;
       frontInput.focus();
     }
 
     function addCard(event) {
       event.preventDefault();
+      var selectedTopic = normalizeTopic(cardTopicSelect.value);
       var card = normalizeCard({
         id: createId(),
         front: frontInput.value,
         back: backInput.value,
-        topic: topicInput.value,
+        topic: selectedTopic,
         createdAt: new Date().toISOString()
       });
 
@@ -446,68 +574,180 @@ full-width: true
       }
 
       cards.push(card);
-      currentIndex = cards.length - 1;
+      settings.lastTopic = selectedTopic;
+      settings.activeTopic = selectedTopic;
+      currentIndex = topicCards().length - 1;
       showingBack = false;
-      saveCards();
+      saveAll();
       clearForm();
-      setStatus("Đã thêm thẻ.");
+      setStatus("Đã thêm flashcard.");
       render();
     }
 
-    function moveCard(step) {
-      if (!cards.length) return;
-      currentIndex += step;
+    function addTopic() {
+      var topic = newTopicInput.value.trim();
+      if (!topic) {
+        setStatus("Vui lòng nhập tên topic.");
+        return;
+      }
+      var exists = settings.topics.some(function (item) {
+        return item.toLowerCase() === topic.toLowerCase();
+      });
+      if (exists) {
+        setStatus("Topic này đã tồn tại.");
+        return;
+      }
+      settings.topics.push(topic);
+      settings.activeTopic = topic;
+      settings.lastTopic = topic;
+      newTopicInput.value = "";
+      currentIndex = 0;
       showingBack = false;
+      saveAll();
+      setStatus("Đã thêm topic.");
+      render();
+    }
+
+    function deleteTopic() {
+      var topic = deleteTopicSelect.value;
+      if (settings.topics.length <= 1 || !topic) return;
+      if (topic === defaultTopic) {
+        setStatus("Không thể xóa topic mặc định English.");
+        return;
+      }
+      var cardCount = cards.filter(function (card) {
+        return card.topic === topic;
+      }).length;
+      var message = cardCount
+        ? 'Xóa topic "' + topic + '" và ' + cardCount + " flashcard trong topic này?"
+        : 'Xóa topic "' + topic + '"?';
+      if (!window.confirm(message)) return;
+
+      settings.topics = settings.topics.filter(function (item) {
+        return item !== topic;
+      });
+      cards = cards.filter(function (card) {
+        return card.topic !== topic;
+      });
+      settings.activeTopic = settings.topics[0] || defaultTopic;
+      settings.lastTopic = settings.activeTopic;
+      currentIndex = 0;
+      showingBack = false;
+      saveAll();
+      setStatus("Đã xóa topic.");
+      render();
+    }
+
+    function changeStudyTopic() {
+      settings.activeTopic = normalizeTopic(studyTopicSelect.value);
+      currentIndex = 0;
+      showingBack = false;
+      saveAll();
       render();
     }
 
     function flipCard() {
-      if (!cards.length) return;
+      if (!topicCards().length) return;
       showingBack = !showingBack;
-      render();
+      renderCard();
     }
 
-    function shuffleCards() {
-      if (cards.length < 2) return;
-      for (var i = cards.length - 1; i > 0; i -= 1) {
+    function moveCard(step) {
+      var list = topicCards();
+      if (!list.length) return;
+      currentIndex += step;
+      showingBack = false;
+      renderCard();
+    }
+
+    function shuffleCurrentTopic() {
+      var list = topicCards();
+      if (list.length < 2) return;
+      var topic = settings.activeTopic;
+      var shuffled = list.slice();
+      for (var i = shuffled.length - 1; i > 0; i -= 1) {
         var j = Math.floor(Math.random() * (i + 1));
-        var temp = cards[i];
-        cards[i] = cards[j];
-        cards[j] = temp;
+        var temp = shuffled[i];
+        shuffled[i] = shuffled[j];
+        shuffled[j] = temp;
       }
+      var nextTopicIndex = 0;
+      cards = cards.map(function (card) {
+        if (card.topic !== topic) return card;
+        var nextCard = shuffled[nextTopicIndex];
+        nextTopicIndex += 1;
+        return nextCard;
+      });
       currentIndex = 0;
       showingBack = false;
-      saveCards();
-      setStatus("Đã trộn thẻ.");
+      saveAll();
+      setStatus("Đã trộn thẻ trong topic.");
       render();
     }
 
-    function deleteCurrentCard() {
-      if (!cards.length) return;
-      var confirmed = window.confirm("Xóa thẻ hiện tại?");
-      if (!confirmed) return;
-      cards.splice(currentIndex, 1);
-      showingBack = false;
-      saveCards();
-      setStatus("Đã xóa thẻ.");
-      render();
+    function openSettings() {
+      lastFocusedElement = document.activeElement;
+      modal.classList.add("is-open");
+      modal.removeAttribute("aria-hidden");
+      setStatus("");
+      frontInput.focus();
+    }
+
+    function closeSettings() {
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
+      if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
+        lastFocusedElement.focus();
+      } else {
+        cardButton.focus();
+      }
     }
 
     form.addEventListener("submit", addCard);
     clearFormButton.addEventListener("click", clearForm);
-    prevButton.addEventListener("click", function () {
-      moveCard(-1);
-    });
-    nextButton.addEventListener("click", function () {
-      moveCard(1);
-    });
-    flipButton.addEventListener("click", flipCard);
+    addTopicButton.addEventListener("click", addTopic);
+    deleteTopicButton.addEventListener("click", deleteTopic);
+    deleteTopicSelect.addEventListener("change", updateDeleteTopicState);
+    studyTopicSelect.addEventListener("change", changeStudyTopic);
     cardButton.addEventListener("click", flipCard);
-    shuffleButton.addEventListener("click", shuffleCards);
-    deleteButton.addEventListener("click", deleteCurrentCard);
+    closeSettingsButton.addEventListener("click", closeSettings);
+    shuffleButton.addEventListener("click", shuffleCurrentTopic);
+    modal.addEventListener("click", function (event) {
+      if (event.target === modal) closeSettings();
+    });
 
+    document.addEventListener("keydown", function (event) {
+      if (event.ctrlKey && event.key === ",") {
+        event.preventDefault();
+        if (modal.classList.contains("is-open")) {
+          closeSettings();
+        } else {
+          openSettings();
+        }
+        return;
+      }
+      if (event.key === "Escape" && modal.classList.contains("is-open")) {
+        closeSettings();
+        return;
+      }
+      if (modal.classList.contains("is-open")) return;
+      if (event.key === "ArrowLeft") moveCard(-1);
+      if (event.key === "ArrowRight") moveCard(1);
+      if (event.key === " " || event.key === "Enter") {
+        event.preventDefault();
+        flipCard();
+      }
+    });
+
+    modal.setAttribute("aria-hidden", "true");
+    loadSettings();
     cards = loadCards();
-    saveCards();
+    settings.topics = uniqTopics(settings.topics.concat(cards.map(function (card) {
+      return card.topic;
+    })));
+    if (settings.topics.indexOf(settings.activeTopic) === -1) settings.activeTopic = defaultTopic;
+    if (settings.topics.indexOf(settings.lastTopic) === -1) settings.lastTopic = settings.activeTopic;
+    saveAll();
     render();
   }());
 </script>
