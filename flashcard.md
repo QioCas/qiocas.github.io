@@ -296,13 +296,13 @@ full-width: true
       <span class="flashcard-card-text" id="flashcard-card-text">
         <span class="flashcard-empty">
           <strong>Chưa có flashcard</strong>
-          <span>Mở Settings để tạo thẻ đầu tiên.</span>
+          <span>Dùng Ctrl + Enter để tạo thẻ đầu tiên.</span>
         </span>
       </span>
     </button>
   </main>
 
-  <div class="flashcard-modal" id="flashcard-modal" role="dialog" aria-modal="true" aria-labelledby="flashcard-settings-title">
+  <div class="flashcard-modal" id="flashcard-settings-modal" role="dialog" aria-modal="true" aria-labelledby="flashcard-settings-title">
     <section class="flashcard-settings">
       <header class="flashcard-settings-header">
         <h2 class="flashcard-settings-title" id="flashcard-settings-title">Settings</h2>
@@ -318,30 +318,6 @@ full-width: true
               <select id="flashcard-study-topic"></select>
             </div>
           </div>
-        </section>
-
-        <section class="flashcard-section" aria-labelledby="flashcard-create-title">
-          <h3 id="flashcard-create-title">Tạo flashcard</h3>
-          <form id="flashcard-form">
-            <div class="flashcard-grid">
-              <div class="flashcard-field full">
-                <label for="flashcard-front">Mặt trước</label>
-                <textarea id="flashcard-front" name="front" required placeholder="Ví dụ: abandon"></textarea>
-              </div>
-              <div class="flashcard-field full">
-                <label for="flashcard-back">Mặt sau</label>
-                <textarea id="flashcard-back" name="back" required placeholder="Ví dụ: từ bỏ, bỏ rơi"></textarea>
-              </div>
-              <div class="flashcard-field">
-                <label for="flashcard-card-topic">Topic</label>
-                <select id="flashcard-card-topic" name="topic" required></select>
-              </div>
-            </div>
-            <div class="flashcard-actions">
-              <button class="flashcard-button primary" type="submit">Thêm thẻ</button>
-              <button class="flashcard-button" id="flashcard-clear-form" type="button">Xóa form</button>
-            </div>
-          </form>
         </section>
 
         <section class="flashcard-section" aria-labelledby="flashcard-topic-settings-title">
@@ -365,8 +341,43 @@ full-width: true
 
       <footer class="flashcard-settings-footer">
         <p class="flashcard-status" id="flashcard-status" role="status" aria-live="polite"></p>
-        <button class="flashcard-button" id="flashcard-shuffle" type="button">Trộn thẻ trong topic</button>
       </footer>
+    </section>
+  </div>
+
+  <div class="flashcard-modal" id="flashcard-create-modal" role="dialog" aria-modal="true" aria-labelledby="flashcard-create-title">
+    <section class="flashcard-settings">
+      <header class="flashcard-settings-header">
+        <h2 class="flashcard-settings-title" id="flashcard-create-title">Tạo flashcard</h2>
+        <button class="flashcard-button icon" id="flashcard-close-create" type="button" aria-label="Đóng tạo flashcard">&times;</button>
+      </header>
+
+      <form id="flashcard-form">
+        <div class="flashcard-settings-body">
+          <div class="flashcard-grid">
+            <div class="flashcard-field full">
+              <label for="flashcard-front">Mặt trước</label>
+              <textarea id="flashcard-front" name="front" required placeholder="Ví dụ: abandon"></textarea>
+            </div>
+            <div class="flashcard-field full">
+              <label for="flashcard-back">Mặt sau</label>
+              <textarea id="flashcard-back" name="back" required placeholder="Ví dụ: từ bỏ, bỏ rơi"></textarea>
+            </div>
+            <div class="flashcard-field">
+              <label for="flashcard-card-topic">Topic</label>
+              <select id="flashcard-card-topic" name="topic" required></select>
+            </div>
+          </div>
+        </div>
+
+        <footer class="flashcard-settings-footer">
+          <p class="flashcard-status" id="flashcard-create-status" role="status" aria-live="polite"></p>
+          <div class="flashcard-actions">
+            <button class="flashcard-button primary" type="submit">Thêm thẻ</button>
+            <button class="flashcard-button" id="flashcard-clear-form" type="button">Xóa form</button>
+          </div>
+        </footer>
+      </form>
     </section>
   </div>
 </div>
@@ -382,7 +393,7 @@ full-width: true
       activeTopic: defaultTopic,
       lastTopic: defaultTopic
     };
-    var currentIndex = 0;
+    var currentCardId = "";
     var showingBack = false;
     var lastFocusedElement = null;
 
@@ -390,8 +401,10 @@ full-width: true
     var cardText = document.getElementById("flashcard-card-text");
     var progress = document.getElementById("flashcard-progress");
     var activeTopicLabel = document.getElementById("flashcard-active-topic");
-    var modal = document.getElementById("flashcard-modal");
+    var settingsModal = document.getElementById("flashcard-settings-modal");
+    var createModal = document.getElementById("flashcard-create-modal");
     var closeSettingsButton = document.getElementById("flashcard-close-settings");
+    var closeCreateButton = document.getElementById("flashcard-close-create");
     var studyTopicSelect = document.getElementById("flashcard-study-topic");
     var form = document.getElementById("flashcard-form");
     var frontInput = document.getElementById("flashcard-front");
@@ -402,8 +415,8 @@ full-width: true
     var addTopicButton = document.getElementById("flashcard-add-topic");
     var deleteTopicSelect = document.getElementById("flashcard-delete-topic");
     var deleteTopicButton = document.getElementById("flashcard-delete-topic-button");
-    var shuffleButton = document.getElementById("flashcard-shuffle");
     var status = document.getElementById("flashcard-status");
+    var createStatus = document.getElementById("flashcard-create-status");
 
     function createId() {
       if (window.crypto && typeof window.crypto.randomUUID === "function") {
@@ -453,6 +466,10 @@ full-width: true
       status.textContent = message || "";
     }
 
+    function setCreateStatus(message) {
+      createStatus.textContent = message || "";
+    }
+
     function writeStorage(key, value) {
       try {
         window.localStorage.setItem(key, JSON.stringify(value));
@@ -500,13 +517,16 @@ full-width: true
       });
     }
 
-    function clampIndex(list) {
+    function pickRandomCardId(list, previousId) {
       if (!list.length) {
-        currentIndex = 0;
-        return;
+        return "";
       }
-      if (currentIndex < 0) currentIndex = list.length - 1;
-      if (currentIndex >= list.length) currentIndex = 0;
+      if (list.length === 1) return list[0].id;
+      var nextCard = list[Math.floor(Math.random() * list.length)];
+      while (nextCard.id === previousId) {
+        nextCard = list[Math.floor(Math.random() * list.length)];
+      }
+      return nextCard.id;
     }
 
     function fillSelect(select, selectedValue) {
@@ -533,16 +553,24 @@ full-width: true
 
     function renderCard() {
       var list = topicCards();
-      clampIndex(list);
       activeTopicLabel.textContent = settings.activeTopic;
-      progress.textContent = list.length ? String(currentIndex + 1) + " / " + String(list.length) : "0 / 0";
+      progress.textContent = list.length ? String(list.length) + " thẻ" : "0 thẻ";
 
       if (!list.length) {
-        cardText.innerHTML = '<span class="flashcard-empty"><strong>Chưa có flashcard</strong><span>Mở Settings để tạo thẻ cho topic này.</span></span>';
+        currentCardId = "";
+        cardText.innerHTML = '<span class="flashcard-empty"><strong>Chưa có flashcard</strong><span>Dùng Ctrl + Enter để tạo thẻ cho topic này.</span></span>';
         return;
       }
 
-      var currentCard = list[currentIndex];
+      var currentCard = list.find(function (card) {
+        return card.id === currentCardId;
+      });
+      if (!currentCard) {
+        currentCardId = pickRandomCardId(list, currentCardId);
+        currentCard = list.find(function (card) {
+          return card.id === currentCardId;
+        });
+      }
       cardText.textContent = showingBack ? currentCard.back : currentCard.front;
     }
 
@@ -569,18 +597,18 @@ full-width: true
       });
 
       if (!card) {
-        setStatus("Vui lòng nhập đủ mặt trước và mặt sau.");
+        setCreateStatus("Vui lòng nhập đủ mặt trước và mặt sau.");
         return;
       }
 
       cards.push(card);
       settings.lastTopic = selectedTopic;
       settings.activeTopic = selectedTopic;
-      currentIndex = topicCards().length - 1;
+      currentCardId = card.id;
       showingBack = false;
       saveAll();
       clearForm();
-      setStatus("Đã thêm flashcard.");
+      setCreateStatus("Đã thêm flashcard.");
       render();
     }
 
@@ -601,7 +629,7 @@ full-width: true
       settings.activeTopic = topic;
       settings.lastTopic = topic;
       newTopicInput.value = "";
-      currentIndex = 0;
+      currentCardId = "";
       showingBack = false;
       saveAll();
       setStatus("Đã thêm topic.");
@@ -631,7 +659,7 @@ full-width: true
       });
       settings.activeTopic = settings.topics[0] || defaultTopic;
       settings.lastTopic = settings.activeTopic;
-      currentIndex = 0;
+      currentCardId = "";
       showingBack = false;
       saveAll();
       setStatus("Đã xóa topic.");
@@ -640,7 +668,7 @@ full-width: true
 
     function changeStudyTopic() {
       settings.activeTopic = normalizeTopic(studyTopicSelect.value);
-      currentIndex = 0;
+      currentCardId = "";
       showingBack = false;
       saveAll();
       render();
@@ -652,50 +680,44 @@ full-width: true
       renderCard();
     }
 
-    function moveCard(step) {
+    function showRandomCard() {
       var list = topicCards();
       if (!list.length) return;
-      currentIndex += step;
+      currentCardId = pickRandomCardId(list, currentCardId);
       showingBack = false;
       renderCard();
     }
 
-    function shuffleCurrentTopic() {
-      var list = topicCards();
-      if (list.length < 2) return;
-      var topic = settings.activeTopic;
-      var shuffled = list.slice();
-      for (var i = shuffled.length - 1; i > 0; i -= 1) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = shuffled[i];
-        shuffled[i] = shuffled[j];
-        shuffled[j] = temp;
-      }
-      var nextTopicIndex = 0;
-      cards = cards.map(function (card) {
-        if (card.topic !== topic) return card;
-        var nextCard = shuffled[nextTopicIndex];
-        nextTopicIndex += 1;
-        return nextCard;
-      });
-      currentIndex = 0;
-      showingBack = false;
-      saveAll();
-      setStatus("Đã trộn thẻ trong topic.");
-      render();
-    }
-
     function openSettings() {
       lastFocusedElement = document.activeElement;
-      modal.classList.add("is-open");
-      modal.removeAttribute("aria-hidden");
+      settingsModal.classList.add("is-open");
+      settingsModal.removeAttribute("aria-hidden");
       setStatus("");
-      frontInput.focus();
+      studyTopicSelect.focus();
     }
 
     function closeSettings() {
-      modal.classList.remove("is-open");
-      modal.setAttribute("aria-hidden", "true");
+      settingsModal.classList.remove("is-open");
+      settingsModal.setAttribute("aria-hidden", "true");
+      restoreFocus();
+    }
+
+    function openCreate() {
+      lastFocusedElement = document.activeElement;
+      createModal.classList.add("is-open");
+      createModal.removeAttribute("aria-hidden");
+      setCreateStatus("");
+      cardTopicSelect.value = settings.lastTopic;
+      frontInput.focus();
+    }
+
+    function closeCreate() {
+      createModal.classList.remove("is-open");
+      createModal.setAttribute("aria-hidden", "true");
+      restoreFocus();
+    }
+
+    function restoreFocus() {
       if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
         lastFocusedElement.focus();
       } else {
@@ -711,35 +733,58 @@ full-width: true
     studyTopicSelect.addEventListener("change", changeStudyTopic);
     cardButton.addEventListener("click", flipCard);
     closeSettingsButton.addEventListener("click", closeSettings);
-    shuffleButton.addEventListener("click", shuffleCurrentTopic);
-    modal.addEventListener("click", function (event) {
-      if (event.target === modal) closeSettings();
+    closeCreateButton.addEventListener("click", closeCreate);
+    settingsModal.addEventListener("click", function (event) {
+      if (event.target === settingsModal) closeSettings();
+    });
+    createModal.addEventListener("click", function (event) {
+      if (event.target === createModal) closeCreate();
     });
 
     document.addEventListener("keydown", function (event) {
       if (event.ctrlKey && event.key === ",") {
         event.preventDefault();
-        if (modal.classList.contains("is-open")) {
+        if (settingsModal.classList.contains("is-open")) {
           closeSettings();
         } else {
+          closeCreate();
           openSettings();
         }
         return;
       }
-      if (event.key === "Escape" && modal.classList.contains("is-open")) {
+      if (event.ctrlKey && event.key === "Enter") {
+        event.preventDefault();
+        if (createModal.classList.contains("is-open")) {
+          if (typeof form.requestSubmit === "function") {
+            form.requestSubmit();
+          } else {
+            form.dispatchEvent(new Event("submit", { cancelable: true }));
+          }
+        } else {
+          closeSettings();
+          openCreate();
+        }
+        return;
+      }
+      if (event.key === "Escape" && settingsModal.classList.contains("is-open")) {
         closeSettings();
         return;
       }
-      if (modal.classList.contains("is-open")) return;
-      if (event.key === "ArrowLeft") moveCard(-1);
-      if (event.key === "ArrowRight") moveCard(1);
+      if (event.key === "Escape" && createModal.classList.contains("is-open")) {
+        closeCreate();
+        return;
+      }
+      if (settingsModal.classList.contains("is-open") || createModal.classList.contains("is-open")) return;
+      if (event.key === "ArrowLeft") showRandomCard();
+      if (event.key === "ArrowRight") showRandomCard();
       if (event.key === " " || event.key === "Enter") {
         event.preventDefault();
         flipCard();
       }
     });
 
-    modal.setAttribute("aria-hidden", "true");
+    settingsModal.setAttribute("aria-hidden", "true");
+    createModal.setAttribute("aria-hidden", "true");
     loadSettings();
     cards = loadCards();
     settings.topics = uniqTopics(settings.topics.concat(cards.map(function (card) {
