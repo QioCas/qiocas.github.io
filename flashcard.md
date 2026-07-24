@@ -89,16 +89,8 @@ full-width: true
   .flashcard-prompt {
     display: block;
     width: 100%;
-    font-size: clamp(2.6rem, 8vw, 6.5rem);
+    font-size: clamp(1.45rem, 4vw, 3rem);
     font-weight: 400;
-    line-height: 1.35;
-    overflow-wrap: anywhere;
-    white-space: pre-wrap;
-  }
-
-  .flashcard-study-hint {
-    color: var(--flash-muted);
-    font-size: clamp(1rem, 2vw, 1.35rem);
     line-height: 1.5;
     overflow-wrap: anywhere;
     white-space: pre-wrap;
@@ -323,7 +315,7 @@ full-width: true
     }
 
     .flashcard-prompt {
-      font-size: clamp(2.2rem, 14vw, 4.5rem);
+      font-size: clamp(1.35rem, 8vw, 2.4rem);
     }
 
     .flashcard-grid {
@@ -360,7 +352,6 @@ full-width: true
           <span>Dùng Ctrl + Enter để tạo thẻ đầu tiên.</span>
         </span>
       </div>
-      <div class="flashcard-study-hint" id="flashcard-study-hint"></div>
       <input class="flashcard-answer-input" id="flashcard-answer-input" type="text" autocomplete="off" placeholder="Điền đáp án" hidden>
       <div class="flashcard-feedback" id="flashcard-feedback" aria-live="polite"></div>
     </form>
@@ -424,10 +415,6 @@ full-width: true
               <textarea id="flashcard-prompt-input" name="prompt" required placeholder="Ví dụ: Một từ tiếng Anh có nghĩa là từ bỏ, bỏ rơi"></textarea>
             </div>
             <div class="flashcard-field full">
-              <label for="flashcard-hint-input">Gợi ý nội dung</label>
-              <textarea id="flashcard-hint-input" name="hint" required placeholder="Ví dụ: bắt đầu bằng chữ a"></textarea>
-            </div>
-            <div class="flashcard-field full">
               <label for="flashcard-answer-input-create">Đáp án</label>
               <textarea id="flashcard-answer-input-create" name="answer" required placeholder="Ví dụ: abandon"></textarea>
             </div>
@@ -467,7 +454,6 @@ full-width: true
 
     var answerForm = document.getElementById("flashcard-answer-form");
     var promptText = document.getElementById("flashcard-prompt");
-    var studyHint = document.getElementById("flashcard-study-hint");
     var answerInput = document.getElementById("flashcard-answer-input");
     var feedback = document.getElementById("flashcard-feedback");
     var progress = document.getElementById("flashcard-progress");
@@ -479,7 +465,6 @@ full-width: true
     var studyTopicSelect = document.getElementById("flashcard-study-topic");
     var form = document.getElementById("flashcard-form");
     var promptInput = document.getElementById("flashcard-prompt-input");
-    var hintInput = document.getElementById("flashcard-hint-input");
     var answerCreateInput = document.getElementById("flashcard-answer-input-create");
     var cardTopicSelect = document.getElementById("flashcard-card-topic");
     var clearFormButton = document.getElementById("flashcard-clear-form");
@@ -523,16 +508,13 @@ full-width: true
     function normalizeCard(card) {
       if (!card || typeof card !== "object") return null;
       var prompt = typeof card.prompt === "string" ? card.prompt.trim() : "";
-      var hint = typeof card.hint === "string" ? card.hint.trim() : "";
       var answer = typeof card.answer === "string" ? card.answer.trim() : "";
       if (!prompt && typeof card.front === "string") prompt = card.front.trim();
       if (!answer && typeof card.back === "string") answer = card.back.trim();
-      if (!hint && typeof card.hintText === "string") hint = card.hintText.trim();
       if (!prompt || !answer) return null;
       return {
         id: typeof card.id === "string" && card.id ? card.id : createId(),
         prompt: prompt,
-        hint: hint,
         answer: answer,
         topic: normalizeTopic(card.topic),
         createdAt: typeof card.createdAt === "string" && card.createdAt ? card.createdAt : new Date().toISOString()
@@ -653,8 +635,6 @@ full-width: true
       if (!list.length) {
         currentCardId = "";
         promptText.innerHTML = '<span class="flashcard-empty"><strong>Chưa có flashcard</strong><span>Dùng Ctrl + Enter để tạo thẻ cho topic này.</span></span>';
-        studyHint.textContent = "";
-        studyHint.hidden = true;
         feedback.textContent = "";
         answerInput.value = "";
         answerInput.hidden = true;
@@ -663,8 +643,6 @@ full-width: true
 
       var card = currentCard();
       promptText.textContent = card.prompt;
-      studyHint.textContent = card.hint || "";
-      studyHint.hidden = !card.hint;
       answerInput.hidden = false;
       if (answerRevealed) {
         feedback.innerHTML = "<strong>Đáp án đúng</strong>" + card.answer;
@@ -690,7 +668,6 @@ full-width: true
       var card = normalizeCard({
         id: createId(),
         prompt: promptInput.value,
-        hint: hintInput.value,
         answer: answerCreateInput.value,
         topic: selectedTopic,
         createdAt: new Date().toISOString()
