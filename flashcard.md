@@ -11,7 +11,7 @@ full-width: true
   }
 
   main.container-fluid {
-    padding-top: 1.5rem;
+    padding-top: 0;
   }
 
   .flashcard-app {
@@ -24,27 +24,28 @@ full-width: true
     --flash-muted: #a9b0bb;
     --flash-accent: #139ee0;
     --flash-danger: #ef6b73;
-    min-height: 68vh;
+    min-height: calc(100vh - 98px);
     display: grid;
     place-items: center;
     color: var(--flash-text);
   }
 
   .flashcard-study {
-    width: min(760px, calc(100vw - 2rem));
+    width: min(920px, calc(100vw - 2rem));
   }
 
   .flashcard-card-meta {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    right: 1rem;
+    position: fixed;
+    left: clamp(1rem, 4vw, 3rem);
+    right: clamp(1rem, 4vw, 3rem);
+    bottom: clamp(1rem, 3vw, 2rem);
     display: flex;
     justify-content: space-between;
     gap: 1rem;
     color: var(--flash-muted);
-    font-size: 0.9rem;
-    font-weight: 700;
+    font-size: 0.82rem;
+    font-weight: 600;
+    opacity: 0.72;
     pointer-events: none;
   }
 
@@ -56,16 +57,14 @@ full-width: true
   }
 
   .flashcard-card {
-    position: relative;
     width: 100%;
-    min-height: clamp(340px, 52vh, 520px);
+    min-height: calc(100vh - 180px);
     display: grid;
     place-items: center;
-    border: 1px solid var(--flash-border);
-    border-radius: 8px;
-    background: var(--flash-surface);
+    border: 0;
+    background: transparent;
     color: #ffffff;
-    padding: clamp(1.2rem, 5vw, 3.5rem);
+    padding: clamp(1rem, 5vw, 3rem);
     text-align: center;
     cursor: pointer;
     user-select: none;
@@ -73,14 +72,21 @@ full-width: true
 
   .flashcard-card:hover,
   .flashcard-card:focus {
-    border-color: var(--flash-accent);
     outline: none;
+  }
+
+  .flashcard-card:focus .flashcard-card-text {
+    text-decoration: underline;
+    text-decoration-color: rgba(19, 158, 224, 0.7);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.22em;
   }
 
   .flashcard-card-text {
     display: block;
     width: 100%;
-    font-size: clamp(1.55rem, 4.5vw, 2.8rem);
+    font-size: clamp(2.6rem, 8vw, 6.5rem);
+    font-weight: 400;
     line-height: 1.35;
     overflow-wrap: anywhere;
     white-space: pre-wrap;
@@ -263,7 +269,15 @@ full-width: true
 
   @media (max-width: 640px) {
     .flashcard-app {
-      min-height: 62vh;
+      min-height: calc(100vh - 86px);
+    }
+
+    .flashcard-card {
+      min-height: calc(100vh - 150px);
+    }
+
+    .flashcard-card-text {
+      font-size: clamp(2.2rem, 14vw, 4.5rem);
     }
 
     .flashcard-grid {
