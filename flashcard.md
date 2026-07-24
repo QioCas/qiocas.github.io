@@ -400,6 +400,19 @@ full-width: true
             <button class="flashcard-button danger" id="flashcard-delete-topic-button" type="button">Xóa topic</button>
           </div>
         </section>
+
+        <section class="flashcard-section" aria-labelledby="flashcard-card-settings-title">
+          <h3 id="flashcard-card-settings-title">Quản lý thẻ</h3>
+          <div class="flashcard-grid">
+            <div class="flashcard-field full">
+              <label for="flashcard-delete-card">Thẻ cần xóa</label>
+              <select id="flashcard-delete-card"></select>
+            </div>
+          </div>
+          <div class="flashcard-actions">
+            <button class="flashcard-button danger" id="flashcard-delete-card-button" type="button">Xóa thẻ</button>
+          </div>
+        </section>
       </div>
 
       <footer class="flashcard-settings-footer">
@@ -481,6 +494,8 @@ full-width: true
     var addTopicButton = document.getElementById("flashcard-add-topic");
     var deleteTopicSelect = document.getElementById("flashcard-delete-topic");
     var deleteTopicButton = document.getElementById("flashcard-delete-topic-button");
+    var deleteCardSelect = document.getElementById("flashcard-delete-card");
+    var deleteCardButton = document.getElementById("flashcard-delete-card-button");
     var status = document.getElementById("flashcard-status");
     var createStatus = document.getElementById("flashcard-create-status");
 
@@ -643,10 +658,29 @@ full-width: true
       });
     }
 
+    function shortenText(text) {
+      var value = String(text || "").replace(/\s+/g, " ").trim();
+      return value.length > 80 ? value.slice(0, 77) + "..." : value;
+    }
+
+    function renderDeleteCardSelect() {
+      var list = topicCards();
+      deleteCardSelect.innerHTML = "";
+      list.forEach(function (card) {
+        var option = document.createElement("option");
+        option.value = card.id;
+        option.textContent = shortenText(card.prompt);
+        if (card.id === currentCardId) option.selected = true;
+        deleteCardSelect.appendChild(option);
+      });
+      deleteCardButton.disabled = !list.length;
+    }
+
     function renderSettingsControls() {
       fillSelect(studyTopicSelect, settings.activeTopic);
       fillSelect(cardTopicSelect, settings.lastTopic);
       fillSelect(deleteTopicSelect, settings.activeTopic);
+      renderDeleteCardSelect();
       updateDeleteTopicState();
     }
 
@@ -773,6 +807,28 @@ full-width: true
       render();
     }
 
+    function deleteCard() {
+      clearNextCardTimer();
+      var cardId = deleteCardSelect.value;
+      if (!cardId) return;
+      var card = cards.find(function (item) {
+        return item.id === cardId;
+      });
+      if (!card) return;
+      var message = 'Xóa thẻ "' + shortenText(card.prompt) + '"?';
+      if (!window.confirm(message)) return;
+
+      cards = cards.filter(function (item) {
+        return item.id !== cardId;
+      });
+      if (currentCardId === cardId) currentCardId = "";
+      answerRevealed = false;
+      answerInput.value = "";
+      saveAll();
+      setStatus("Đã xóa thẻ.");
+      render();
+    }
+
     function changeStudyTopic() {
       clearNextCardTimer();
       settings.activeTopic = normalizeTopic(studyTopicSelect.value);
@@ -866,6 +922,7 @@ full-width: true
     clearFormButton.addEventListener("click", clearForm);
     addTopicButton.addEventListener("click", addTopic);
     deleteTopicButton.addEventListener("click", deleteTopic);
+    deleteCardButton.addEventListener("click", deleteCard);
     deleteTopicSelect.addEventListener("change", updateDeleteTopicState);
     studyTopicSelect.addEventListener("change", changeStudyTopic);
     activeTopicLabel.addEventListener("click", switchToNextTopic);
