@@ -24,6 +24,7 @@ full-width: true
     --flash-muted: #a9b0bb;
     --flash-accent: #139ee0;
     --flash-danger: #ef6b73;
+    --flash-success: #46c28d;
     min-height: calc(100vh - 98px);
     display: grid;
     place-items: center;
@@ -125,9 +126,16 @@ full-width: true
 
   .flashcard-feedback strong {
     display: block;
-    color: var(--flash-danger);
     font-size: 0.9rem;
     margin-bottom: 0.25rem;
+  }
+
+  .flashcard-feedback.correct strong {
+    color: var(--flash-success);
+  }
+
+  .flashcard-feedback.incorrect strong {
+    color: var(--flash-danger);
   }
 
   .flashcard-empty {
@@ -450,6 +458,7 @@ full-width: true
     };
     var currentCardId = "";
     var answerRevealed = false;
+    var nextCardTimer = null;
     var lastFocusedElement = null;
 
     var answerForm = document.getElementById("flashcard-answer-form");
@@ -527,6 +536,24 @@ full-width: true
 
     function setCreateStatus(message) {
       createStatus.textContent = message || "";
+    }
+
+    function setFeedback(state, message, answer) {
+      feedback.classList.remove("correct", "incorrect");
+      if (!message) {
+        feedback.textContent = "";
+        return;
+      }
+      feedback.classList.add(state);
+      feedback.innerHTML = answer
+        ? "<strong>" + message + "</strong>Đáp án đúng là: " + answer
+        : "<strong>" + message + "</strong>";
+    }
+
+    function clearNextCardTimer() {
+      if (!nextCardTimer) return;
+      window.clearTimeout(nextCardTimer);
+      nextCardTimer = null;
     }
 
     function writeStorage(key, value) {
@@ -635,7 +662,7 @@ full-width: true
       if (!list.length) {
         currentCardId = "";
         promptText.innerHTML = '<span class="flashcard-empty"><strong>Chưa có flashcard</strong><span>Dùng Ctrl + Enter để tạo thẻ cho topic này.</span></span>';
-        feedback.textContent = "";
+        setFeedback("", "");
         answerInput.value = "";
         answerInput.hidden = true;
         return;
@@ -645,9 +672,9 @@ full-width: true
       promptText.textContent = card.prompt;
       answerInput.hidden = false;
       if (answerRevealed) {
-        feedback.innerHTML = "<strong>Đáp án đúng</strong>" + card.answer;
+        setFeedback("incorrect", "Đáp án không chính xác", card.answer);
       } else {
-        feedback.textContent = "";
+        setFeedback("", "");
       }
     }
 
@@ -664,6 +691,7 @@ full-width: true
 
     function addCard(event) {
       event.preventDefault();
+      clearNextCardTimer();
       var selectedTopic = normalizeTopic(cardTopicSelect.value);
       var card = normalizeCard({
         id: createId(),
@@ -690,6 +718,7 @@ full-width: true
     }
 
     function addTopic() {
+      clearNextCardTimer();
       var topic = newTopicInput.value.trim();
       if (!topic) {
         setStatus("Vui lòng nhập tên topic.");
@@ -714,6 +743,7 @@ full-width: true
     }
 
     function deleteTopic() {
+      clearNextCardTimer();
       var topic = deleteTopicSelect.value;
       if (settings.topics.length <= 1 || !topic) return;
       if (topic === defaultTopic) {
@@ -744,6 +774,7 @@ full-width: true
     }
 
     function changeStudyTopic() {
+      clearNextCardTimer();
       settings.activeTopic = normalizeTopic(studyTopicSelect.value);
       currentCardId = "";
       answerRevealed = false;
@@ -753,6 +784,7 @@ full-width: true
 
     function switchToNextTopic() {
       if (!settings.topics.length) return;
+      clearNextCardTimer();
       var currentTopicIndex = settings.topics.indexOf(settings.activeTopic);
       var nextTopicIndex = currentTopicIndex === -1 ? 0 : (currentTopicIndex + 1) % settings.topics.length;
       settings.activeTopic = settings.topics[nextTopicIndex];
@@ -764,11 +796,16 @@ full-width: true
 
     function checkAnswer(event) {
       event.preventDefault();
+      clearNextCardTimer();
       var card = currentCard();
       if (!card) return;
       if (normalizeAnswer(answerInput.value) === normalizeAnswer(card.answer)) {
-        showRandomCard();
-        answerInput.focus();
+        answerRevealed = false;
+        setFeedback("correct", "Đáp án chính xác");
+        nextCardTimer = window.setTimeout(function () {
+          showRandomCard();
+          nextCardTimer = null;
+        }, 700);
         return;
       }
       answerRevealed = true;
@@ -779,6 +816,7 @@ full-width: true
     function showRandomCard() {
       var list = topicCards();
       if (!list.length) return;
+      clearNextCardTimer();
       currentCardId = pickRandomCardId(list, currentCardId);
       answerRevealed = false;
       answerInput.value = "";
