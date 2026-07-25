@@ -83,14 +83,14 @@ full-width: true
     background: transparent;
     color: #ffffff;
     padding: clamp(1rem, 5vw, 3rem);
-    text-align: center;
+    text-align: left;
     cursor: default;
   }
 
   .flashcard-prompt {
     display: block;
     width: 100%;
-    font-size: clamp(1.45rem, 4vw, 3rem);
+    font-size: clamp(1.1rem, 2.2vw, 1.85rem);
     font-weight: 400;
     line-height: 1.5;
     overflow-wrap: anywhere;
@@ -99,15 +99,15 @@ full-width: true
 
   .flashcard-answer-input {
     width: min(680px, 100%);
-    margin: 0 auto;
+    margin: 0;
     border: 0;
     border-bottom: 1px solid rgba(228, 230, 235, 0.42);
     background: transparent;
     color: var(--flash-text);
     padding: 0.55rem 0;
     font: inherit;
-    font-size: clamp(1.25rem, 3vw, 2rem);
-    text-align: center;
+    font-size: clamp(1.05rem, 2vw, 1.45rem);
+    text-align: left;
   }
 
   .flashcard-answer-input:focus {
@@ -323,7 +323,7 @@ full-width: true
     }
 
     .flashcard-prompt {
-      font-size: clamp(1.35rem, 8vw, 2.4rem);
+      font-size: clamp(1.05rem, 5.5vw, 1.55rem);
     }
 
     .flashcard-grid {
