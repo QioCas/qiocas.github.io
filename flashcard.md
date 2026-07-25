@@ -110,6 +110,14 @@ full-width: true
     text-align: left;
   }
 
+  .flashcard-answer-hint {
+    color: var(--flash-muted);
+    font-size: clamp(0.95rem, 1.8vw, 1.2rem);
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+
   .flashcard-answer-input:focus {
     border-bottom-color: var(--flash-accent);
     outline: none;
@@ -360,6 +368,7 @@ full-width: true
           <span>Dùng Ctrl + Enter để tạo thẻ đầu tiên.</span>
         </span>
       </div>
+      <div class="flashcard-answer-hint" id="flashcard-answer-hint"></div>
       <input class="flashcard-answer-input" id="flashcard-answer-input" type="text" autocomplete="off" placeholder="Điền đáp án" hidden>
       <div class="flashcard-feedback" id="flashcard-feedback" aria-live="polite"></div>
     </form>
@@ -476,6 +485,7 @@ full-width: true
 
     var answerForm = document.getElementById("flashcard-answer-form");
     var promptText = document.getElementById("flashcard-prompt");
+    var answerHint = document.getElementById("flashcard-answer-hint");
     var answerInput = document.getElementById("flashcard-answer-input");
     var feedback = document.getElementById("flashcard-feedback");
     var progress = document.getElementById("flashcard-progress");
@@ -634,6 +644,13 @@ full-width: true
       return String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
     }
 
+    function maskAnswer(answer) {
+      return String(answer || "").replace(/\S+/g, function (word) {
+        if (word.length <= 1) return word;
+        return word.charAt(0) + "_".repeat(word.length - 1);
+      });
+    }
+
     function currentCard() {
       var list = topicCards();
       if (!list.length) return null;
@@ -696,6 +713,8 @@ full-width: true
       if (!list.length) {
         currentCardId = "";
         promptText.innerHTML = '<span class="flashcard-empty"><strong>Chưa có flashcard</strong><span>Dùng Ctrl + Enter để tạo thẻ cho topic này.</span></span>';
+        answerHint.textContent = "";
+        answerHint.hidden = true;
         setFeedback("", "");
         answerInput.value = "";
         answerInput.hidden = true;
@@ -704,6 +723,8 @@ full-width: true
 
       var card = currentCard();
       promptText.textContent = card.prompt;
+      answerHint.textContent = "Hint: " + maskAnswer(card.answer);
+      answerHint.hidden = false;
       answerInput.hidden = false;
       if (answerRevealed) {
         setFeedback("incorrect", "Đáp án không chính xác", card.answer);
