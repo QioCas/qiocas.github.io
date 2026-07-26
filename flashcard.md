@@ -1607,6 +1607,16 @@ full-width: true
         renderCard();
         return;
       }
+      if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "f") {
+        event.preventDefault();
+        if (cardListModal.classList.contains("is-open")) {
+          closeCardList();
+        } else {
+          closeCreate();
+          openCardList();
+        }
+        return;
+      }
       if (event.ctrlKey && event.key === ",") {
         event.preventDefault();
         if (cardListModal.classList.contains("is-open")) {
