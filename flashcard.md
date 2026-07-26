@@ -302,19 +302,6 @@ full-width: true
     resize: vertical;
   }
 
-  .flashcard-formula {
-    margin: 0;
-    border: 1px solid var(--flash-border);
-    border-radius: 6px;
-    background: var(--flash-bg);
-    color: var(--flash-muted);
-    padding: 0.8rem;
-    font-size: 0.82rem;
-    line-height: 1.5;
-    overflow: auto;
-    white-space: pre;
-  }
-
   .flashcard-field input:focus,
   .flashcard-field select:focus,
   .flashcard-field textarea:focus {
@@ -428,7 +415,7 @@ full-width: true
       <input class="flashcard-answer-input" id="flashcard-answer-input" type="text" autocomplete="off" placeholder="Điền đáp án" hidden>
       <div class="flashcard-feedback" id="flashcard-feedback" aria-live="polite"></div>
       <div class="flashcard-due-drop" id="flashcard-due-drop" hidden>
-        <span>Drop due ngẫu nhiên theo số card hiện tại:</span>
+        <span>Drop due của các thẻ với tỉ lệ:</span>
         <button type="button" data-ratio="0.25">25%</button>
         <button type="button" data-ratio="0.5">50%</button>
         <button type="button" data-ratio="0.75">75%</button>
@@ -489,20 +476,6 @@ full-width: true
 
         <section class="flashcard-section" aria-labelledby="flashcard-srs-settings-title">
           <h3 id="flashcard-srs-settings-title">SRS</h3>
-          <div class="flashcard-field full">
-            <label>Công thức</label>
-            <pre class="flashcard-formula">new card: dueAt = now + newDelay
-wrong answer: dueAt = now + wrongDelay
-correct answer: dueAt = now + correctDelay × correctGrowth^(correctStreak - 1)
-
-weight = baseWeight
-       + wrongCount × wrongWeight
-       + recentWrong × recentWrongWeight
-       - correctStreak × streakPenalty
-       + overdueBonus
-
-weight = clamp(weight, minWeight, maxWeight)</pre>
-          </div>
           <div class="flashcard-grid">
             <div class="flashcard-field">
               <label for="flashcard-new-delay">newDelay</label>
@@ -516,42 +489,10 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
               <label for="flashcard-correct-delay">correctDelay</label>
               <input id="flashcard-correct-delay" type="text" inputmode="text" placeholder="30m">
             </div>
-            <div class="flashcard-field">
-              <label for="flashcard-correct-growth">correctGrowth</label>
-              <input id="flashcard-correct-growth" type="number" step="0.1" min="1">
-            </div>
-            <div class="flashcard-field">
-              <label for="flashcard-base-weight">baseWeight</label>
-              <input id="flashcard-base-weight" type="number" step="0.1" min="0">
-            </div>
-            <div class="flashcard-field">
-              <label for="flashcard-wrong-weight">wrongWeight</label>
-              <input id="flashcard-wrong-weight" type="number" step="0.1" min="0">
-            </div>
-            <div class="flashcard-field">
-              <label for="flashcard-recent-wrong-weight">recentWrongWeight</label>
-              <input id="flashcard-recent-wrong-weight" type="number" step="0.1" min="0">
-            </div>
-            <div class="flashcard-field">
-              <label for="flashcard-streak-penalty">streakPenalty</label>
-              <input id="flashcard-streak-penalty" type="number" step="0.1" min="0">
-            </div>
-            <div class="flashcard-field">
-              <label for="flashcard-overdue-weight">overdueWeight</label>
-              <input id="flashcard-overdue-weight" type="number" step="0.1" min="0">
-            </div>
-            <div class="flashcard-field">
-              <label for="flashcard-min-weight">minWeight</label>
-              <input id="flashcard-min-weight" type="number" step="0.1" min="0">
-            </div>
-            <div class="flashcard-field">
-              <label for="flashcard-max-weight">maxWeight</label>
-              <input id="flashcard-max-weight" type="number" step="0.1" min="0.1">
-            </div>
           </div>
           <div class="flashcard-actions">
             <button class="flashcard-button primary" id="flashcard-save-srs" type="button">Lưu SRS</button>
-            <button class="flashcard-button" id="flashcard-reset-srs" type="button">Reset default</button>
+            <button class="flashcard-button" id="flashcard-reset-srs" type="button">Reset delay default</button>
           </div>
         </section>
       </div>
@@ -661,14 +602,6 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
     var newDelayInput = document.getElementById("flashcard-new-delay");
     var wrongDelayInput = document.getElementById("flashcard-wrong-delay");
     var correctDelayInput = document.getElementById("flashcard-correct-delay");
-    var correctGrowthInput = document.getElementById("flashcard-correct-growth");
-    var baseWeightInput = document.getElementById("flashcard-base-weight");
-    var wrongWeightInput = document.getElementById("flashcard-wrong-weight");
-    var recentWrongWeightInput = document.getElementById("flashcard-recent-wrong-weight");
-    var streakPenaltyInput = document.getElementById("flashcard-streak-penalty");
-    var overdueWeightInput = document.getElementById("flashcard-overdue-weight");
-    var minWeightInput = document.getElementById("flashcard-min-weight");
-    var maxWeightInput = document.getElementById("flashcard-max-weight");
     var saveSrsButton = document.getElementById("flashcard-save-srs");
     var resetSrsButton = document.getElementById("flashcard-reset-srs");
     var resetAllButton = document.getElementById("flashcard-reset-all");
@@ -1130,14 +1063,6 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       newDelayInput.value = settings.srs.newDelay;
       wrongDelayInput.value = settings.srs.wrongDelay;
       correctDelayInput.value = settings.srs.correctDelay;
-      correctGrowthInput.value = settings.srs.correctGrowth;
-      baseWeightInput.value = settings.srs.baseWeight;
-      wrongWeightInput.value = settings.srs.wrongWeight;
-      recentWrongWeightInput.value = settings.srs.recentWrongWeight;
-      streakPenaltyInput.value = settings.srs.streakPenalty;
-      overdueWeightInput.value = settings.srs.overdueWeight;
-      minWeightInput.value = settings.srs.minWeight;
-      maxWeightInput.value = settings.srs.maxWeight;
     }
 
     function renderSettingsControls() {
@@ -1328,33 +1253,29 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
     }
 
     function collectSrsControls() {
-      return normalizeSrsConfig({
+      return normalizeSrsConfig(Object.assign({}, settings.srs, {
         newDelay: newDelayInput.value,
         wrongDelay: wrongDelayInput.value,
-        correctDelay: correctDelayInput.value,
-        correctGrowth: correctGrowthInput.value,
-        baseWeight: baseWeightInput.value,
-        wrongWeight: wrongWeightInput.value,
-        recentWrongWeight: recentWrongWeightInput.value,
-        streakPenalty: streakPenaltyInput.value,
-        overdueWeight: overdueWeightInput.value,
-        minWeight: minWeightInput.value,
-        maxWeight: maxWeightInput.value
-      });
+        correctDelay: correctDelayInput.value
+      }));
     }
 
     function saveSrsSettings() {
       settings.srs = collectSrsControls();
       saveAll();
       renderSrsControls();
-      setStatus("Đã lưu SRS.");
+      setStatus("Đã lưu delay SRS.");
     }
 
     function resetSrsSettings() {
-      settings.srs = Object.assign({}, defaultSrs);
+      settings.srs = normalizeSrsConfig(Object.assign({}, settings.srs, {
+        newDelay: defaultSrs.newDelay,
+        wrongDelay: defaultSrs.wrongDelay,
+        correctDelay: defaultSrs.correctDelay
+      }));
       saveAll();
       renderSrsControls();
-      setStatus("Đã reset SRS về default.");
+      setStatus("Đã reset delay về default.");
     }
 
     function resetAllData() {
