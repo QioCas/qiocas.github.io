@@ -158,6 +158,37 @@ full-width: true
     white-space: pre-wrap;
   }
 
+  .flashcard-due-drop {
+    color: var(--flash-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    max-width: min(760px, 100%);
+  }
+
+  .flashcard-due-drop span {
+    flex: 1 1 100%;
+    font-size: 0.92rem;
+  }
+
+  .flashcard-due-drop button {
+    min-height: 34px;
+    border: 1px solid var(--flash-border-strong);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--flash-text);
+    padding: 0.35rem 0.65rem;
+    font: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .flashcard-due-drop button:hover,
+  .flashcard-due-drop button:focus {
+    border-color: var(--flash-accent);
+    outline: none;
+  }
+
   .flashcard-empty {
     display: grid;
     gap: 0.6rem;
@@ -396,6 +427,13 @@ full-width: true
       <div class="flashcard-answer-hint" id="flashcard-answer-hint"></div>
       <input class="flashcard-answer-input" id="flashcard-answer-input" type="text" autocomplete="off" placeholder="Điền đáp án" hidden>
       <div class="flashcard-feedback" id="flashcard-feedback" aria-live="polite"></div>
+      <div class="flashcard-due-drop" id="flashcard-due-drop" hidden>
+        <span>Drop due ngẫu nhiên theo số card hiện tại:</span>
+        <button type="button" data-ratio="0.25">25%</button>
+        <button type="button" data-ratio="0.5">50%</button>
+        <button type="button" data-ratio="0.75">75%</button>
+        <button type="button" data-ratio="1">100%</button>
+      </div>
       <pre class="flashcard-debug" id="flashcard-debug" hidden></pre>
     </form>
   </main>
@@ -599,6 +637,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
     var answerHint = document.getElementById("flashcard-answer-hint");
     var answerInput = document.getElementById("flashcard-answer-input");
     var feedback = document.getElementById("flashcard-feedback");
+    var dueDrop = document.getElementById("flashcard-due-drop");
     var debugPanel = document.getElementById("flashcard-debug");
     var progress = document.getElementById("flashcard-progress");
     var activeTopicLabel = document.getElementById("flashcard-active-topic");
@@ -1126,6 +1165,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
         setFeedback("", "");
         answerInput.value = "";
         answerInput.hidden = true;
+        dueDrop.hidden = true;
         renderDebug(null);
         return;
       }
@@ -1142,6 +1182,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
         setFeedback("", "");
         answerInput.value = "";
         answerInput.hidden = true;
+        dueDrop.hidden = false;
         renderDebug(null);
         return;
       }
@@ -1150,6 +1191,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       answerHint.textContent = "Hint: " + maskAnswer(card.answer);
       answerHint.hidden = false;
       answerInput.hidden = false;
+      dueDrop.hidden = true;
       if (answerRevealed) {
         setFeedback("incorrect", "Đáp án không chính xác", card.answer);
       } else {
@@ -1386,6 +1428,31 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       if (!answerInput.hidden) answerInput.focus();
     }
 
+    function dropDueByRatio(ratio) {
+      var list = topicCards();
+      if (!list.length) return;
+      var count = Math.max(1, Math.ceil(list.length * ratio));
+      var shuffled = list.slice();
+      for (var i = shuffled.length - 1; i > 0; i -= 1) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = shuffled[i];
+        shuffled[i] = shuffled[j];
+        shuffled[j] = temp;
+      }
+      var nowIso = new Date().toISOString();
+      shuffled.slice(0, count).forEach(function (card) {
+        card.stats = normalizeStats(card.stats, Date.now());
+        card.stats.dueAt = nowIso;
+      });
+      currentCardId = "";
+      lastSeenCardId = "";
+      resetAttemptState();
+      answerInput.value = "";
+      saveAll();
+      render();
+      if (!answerInput.hidden) answerInput.focus();
+    }
+
     function openSettings() {
       lastFocusedElement = document.activeElement;
       settingsModal.classList.add("is-open");
@@ -1441,6 +1508,11 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
     });
     createModal.addEventListener("click", function (event) {
       if (event.target === createModal) closeCreate();
+    });
+    dueDrop.addEventListener("click", function (event) {
+      var button = event.target.closest("button[data-ratio]");
+      if (!button) return;
+      dropDueByRatio(Number(button.dataset.ratio));
     });
 
     document.addEventListener("keydown", function (event) {
