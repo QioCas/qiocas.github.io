@@ -558,6 +558,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
 
       <footer class="flashcard-settings-footer">
         <p class="flashcard-status" id="flashcard-status" role="status" aria-live="polite"></p>
+        <button class="flashcard-button danger" id="flashcard-reset-all" type="button">Reset toàn bộ</button>
       </footer>
     </section>
   </div>
@@ -670,6 +671,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
     var maxWeightInput = document.getElementById("flashcard-max-weight");
     var saveSrsButton = document.getElementById("flashcard-save-srs");
     var resetSrsButton = document.getElementById("flashcard-reset-srs");
+    var resetAllButton = document.getElementById("flashcard-reset-all");
     var status = document.getElementById("flashcard-status");
     var createStatus = document.getElementById("flashcard-create-status");
 
@@ -1355,6 +1357,30 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       setStatus("Đã reset SRS về default.");
     }
 
+    function resetAllData() {
+      var confirmed = window.confirm("Reset toàn bộ flashcard, topic, stats và SRS settings?");
+      if (!confirmed) return;
+      clearNextCardTimer();
+      window.localStorage.removeItem(cardsKey);
+      window.localStorage.removeItem(settingsKey);
+      cards = [];
+      settings = {
+        topics: [defaultTopic],
+        activeTopic: defaultTopic,
+        lastTopic: defaultTopic,
+        srs: Object.assign({}, defaultSrs)
+      };
+      currentCardId = "";
+      lastSeenCardId = "";
+      resetAttemptState();
+      answerInput.value = "";
+      setFeedback("", "");
+      setCreateStatus("");
+      setStatus("Đã reset toàn bộ dữ liệu.");
+      saveAll();
+      render();
+    }
+
     function changeStudyTopic() {
       clearNextCardTimer();
       settings.activeTopic = normalizeTopic(studyTopicSelect.value);
@@ -1498,6 +1524,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
     deleteCardButton.addEventListener("click", deleteCard);
     saveSrsButton.addEventListener("click", saveSrsSettings);
     resetSrsButton.addEventListener("click", resetSrsSettings);
+    resetAllButton.addEventListener("click", resetAllData);
     deleteTopicSelect.addEventListener("change", updateDeleteTopicState);
     studyTopicSelect.addEventListener("change", changeStudyTopic);
     activeTopicLabel.addEventListener("click", switchToNextTopic);
