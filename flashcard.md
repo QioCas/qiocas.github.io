@@ -794,6 +794,7 @@ full-width: true
     var status = document.getElementById("flashcard-status");
     var createStatus = document.getElementById("flashcard-create-status");
     var selectedCardId = "";
+    var cardListNowMs = 0;
 
     function createId() {
       if (window.crypto && typeof window.crypto.randomUUID === "function") {
@@ -1318,7 +1319,7 @@ full-width: true
         return;
       }
 
-      var nowMs = Date.now();
+      var nowMs = cardListNowMs || Date.now();
       var table = document.createElement("table");
       var thead = document.createElement("thead");
       var tbody = document.createElement("tbody");
@@ -1553,6 +1554,7 @@ full-width: true
       settings.srs = collectSrsControls();
       saveAll();
       renderSrsControls();
+      cardListNowMs = Date.now();
       renderCardList();
       setStatus("Đã lưu delay SRS.");
     }
@@ -1565,6 +1567,7 @@ full-width: true
       }));
       saveAll();
       renderSrsControls();
+      cardListNowMs = Date.now();
       renderCardList();
       setStatus("Đã reset delay về default.");
     }
@@ -1705,6 +1708,7 @@ full-width: true
 
     function openCardList() {
       lastFocusedElement = document.activeElement;
+      cardListNowMs = Date.now();
       renderCardList();
       cardListModal.classList.add("is-open");
       cardListModal.removeAttribute("aria-hidden");
@@ -1714,6 +1718,7 @@ full-width: true
     function closeCardList() {
       cardListModal.classList.remove("is-open");
       cardListModal.setAttribute("aria-hidden", "true");
+      cardListNowMs = 0;
       restoreFocus();
     }
 
