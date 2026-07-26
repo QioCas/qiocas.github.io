@@ -977,19 +977,12 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
 
     function pickNextCard(list, previousId) {
       if (!list.length) return null;
-      if (list.length === 1) return list[0];
       var nowMs = Date.now();
       var pool = list.filter(function (card) {
         return dueTime(card) <= nowMs;
       });
       if (!pool.length) {
-        pool = list.filter(function (card) {
-          return card.id !== previousId;
-        });
-        if (!pool.length) pool = list.slice();
-        pool = pool.sort(function (a, b) {
-          return dueTime(a) - dueTime(b);
-        }).slice(0, 1);
+        return null;
       }
       if (pool.length > 1) {
         pool = pool.filter(function (card) {
@@ -1016,6 +1009,13 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
     function pickRandomCardId(list, previousId) {
       var nextCard = pickNextCard(list, previousId);
       return nextCard ? nextCard.id : "";
+    }
+
+    function nextDueCard(list) {
+      if (!list.length) return null;
+      return list.slice().sort(function (a, b) {
+        return dueTime(a) - dueTime(b);
+      })[0];
     }
 
     function markCardSeen(card) {
@@ -1131,6 +1131,20 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       }
 
       var card = currentCard();
+      if (!card) {
+        var nextCard = nextDueCard(list);
+        var nextDueMs = nextCard ? dueTime(nextCard) - Date.now() : 0;
+        currentCardId = "";
+        lastSeenCardId = "";
+        promptText.innerHTML = '<span class="flashcard-empty"><strong>Chưa có thẻ tới hạn</strong><span>Thẻ tiếp theo sẽ due sau ' + formatMs(nextDueMs) + '.</span></span>';
+        answerHint.textContent = "";
+        answerHint.hidden = true;
+        setFeedback("", "");
+        answerInput.value = "";
+        answerInput.hidden = true;
+        renderDebug(null);
+        return;
+      }
       syncCardSeen(card);
       promptText.textContent = card.prompt;
       answerHint.textContent = "Hint: " + maskAnswer(card.answer);
@@ -1369,7 +1383,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       resetAttemptState();
       answerInput.value = "";
       renderCard();
-      answerInput.focus();
+      if (!answerInput.hidden) answerInput.focus();
     }
 
     function openSettings() {
