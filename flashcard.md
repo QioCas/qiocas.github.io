@@ -364,6 +364,54 @@ full-width: true
     font-size: 0.9rem;
   }
 
+  .flashcard-table-wrap {
+    border: 1px solid var(--flash-border);
+    border-radius: 6px;
+    max-height: 280px;
+    overflow: auto;
+  }
+
+  .flashcard-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+
+  .flashcard-table th,
+  .flashcard-table td {
+    border-bottom: 1px solid var(--flash-border);
+    padding: 0.62rem 0.7rem;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .flashcard-table th {
+    color: var(--flash-muted);
+    font-size: 0.78rem;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .flashcard-table td:nth-child(2) {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .flashcard-table td:nth-child(3) {
+    color: var(--flash-muted);
+    white-space: nowrap;
+  }
+
+  .flashcard-table tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .flashcard-table-empty {
+    margin: 0;
+    color: var(--flash-muted);
+    font-size: 0.9rem;
+  }
+
   @media (max-width: 640px) {
     .flashcard-app {
       min-height: calc(100vh - 86px);
@@ -393,6 +441,10 @@ full-width: true
 
     .flashcard-button.icon {
       flex: 0 0 40px;
+    }
+
+    .flashcard-table {
+      min-width: 520px;
     }
   }
 </style>
@@ -494,6 +546,14 @@ full-width: true
             <button class="flashcard-button primary" id="flashcard-save-srs" type="button">Lưu SRS</button>
             <button class="flashcard-button" id="flashcard-reset-srs" type="button">Reset delay default</button>
           </div>
+        </section>
+
+        <section class="flashcard-section" aria-labelledby="flashcard-card-table-title">
+          <h3 id="flashcard-card-table-title">Bảng thẻ</h3>
+          <div class="flashcard-actions">
+            <button class="flashcard-button" id="flashcard-toggle-card-list" type="button">Mở bảng</button>
+          </div>
+          <div class="flashcard-table-wrap" id="flashcard-card-list-panel" hidden></div>
         </section>
       </div>
 
@@ -605,8 +665,11 @@ full-width: true
     var saveSrsButton = document.getElementById("flashcard-save-srs");
     var resetSrsButton = document.getElementById("flashcard-reset-srs");
     var resetAllButton = document.getElementById("flashcard-reset-all");
+    var toggleCardListButton = document.getElementById("flashcard-toggle-card-list");
+    var cardListPanel = document.getElementById("flashcard-card-list-panel");
     var status = document.getElementById("flashcard-status");
     var createStatus = document.getElementById("flashcard-create-status");
+    var cardListOpen = false;
 
     function createId() {
       if (window.crypto && typeof window.crypto.randomUUID === "function") {
@@ -838,14 +901,27 @@ full-width: true
       return Math.min(1, overdueMs / correctDelayMs) * settings.srs.overdueWeight;
     }
 
-    function cardWeight(card, nowMs) {
+    function weightBreakdown(card, nowMs) {
       var stats = card.stats || normalizeStats(null, nowMs);
-      var weight = settings.srs.baseWeight
-        + stats.wrongCount * settings.srs.wrongWeight
-        + stats.recentWrong * settings.srs.recentWrongWeight
-        - stats.correctStreak * settings.srs.streakPenalty
-        + overdueBonus(card, nowMs);
-      return clamp(weight, settings.srs.minWeight, settings.srs.maxWeight);
+      var basePart = settings.srs.baseWeight;
+      var wrongPart = stats.wrongCount * settings.srs.wrongWeight;
+      var recentWrongPart = stats.recentWrong * settings.srs.recentWrongWeight;
+      var streakPart = stats.correctStreak * settings.srs.streakPenalty;
+      var overduePart = overdueBonus(card, nowMs);
+      var rawWeight = basePart + wrongPart + recentWrongPart - streakPart + overduePart;
+      return {
+        rawWeight: rawWeight,
+        finalWeight: clamp(rawWeight, settings.srs.minWeight, settings.srs.maxWeight),
+        basePart: basePart,
+        wrongPart: wrongPart,
+        recentWrongPart: recentWrongPart,
+        streakPart: streakPart,
+        overduePart: overduePart
+      };
+    }
+
+    function cardWeight(card, nowMs) {
+      return weightBreakdown(card, nowMs).finalWeight;
     }
 
     function formatLocalDateTime(value) {
@@ -880,50 +956,19 @@ full-width: true
       return sign + Math.round(hours / 24) + "d";
     }
 
+    function formatDue(card, nowMs) {
+      var dueMs = dueTime(card) - nowMs;
+      if (dueMs <= 0) return "due now";
+      return "in " + formatMs(dueMs);
+    }
+
     function debugBreakdown(card) {
       if (!card) return "";
       var nowMs = Date.now();
-      var stats = card.stats || normalizeStats(null, nowMs);
-      var basePart = settings.srs.baseWeight;
-      var wrongPart = stats.wrongCount * settings.srs.wrongWeight;
-      var recentWrongPart = stats.recentWrong * settings.srs.recentWrongWeight;
-      var streakPart = stats.correctStreak * settings.srs.streakPenalty;
-      var overduePart = overdueBonus(card, nowMs);
-      var rawWeight = basePart + wrongPart + recentWrongPart - streakPart + overduePart;
-      var finalWeight = cardWeight(card, nowMs);
-      var dueMs = dueTime(card) - nowMs;
-      var seenCooldownMs = parseDurationMs(settings.srs.wrongDelay, defaultSrs.wrongDelay);
-      var seenCooldownLeftMs = Math.max(0, seenCooldownMs - (nowMs - lastSeenTime(card)));
+      var breakdown = weightBreakdown(card, nowMs);
 
       return [
-        "DEBUG MODE (Ctrl + Shift + D)",
-        "id = " + card.id,
-        "now = " + formatLocalDateTime(new Date(nowMs)),
-        "dueAt = " + formatLocalDateTime(stats.dueAt) + " (" + (dueMs <= 0 ? "due " + formatMs(-dueMs) + " ago" : "due in " + formatMs(dueMs)) + ")",
-        "lastSeenAt = " + formatLocalDateTime(stats.lastSeenAt),
-        "lastAnsweredAt = " + formatLocalDateTime(stats.lastAnsweredAt),
-        "seenCooldownLeft = " + formatMs(seenCooldownLeftMs),
-        "",
-        "seenCount = " + stats.seenCount,
-        "correctCount = " + stats.correctCount,
-        "wrongCount = " + stats.wrongCount,
-        "recentWrong = " + stats.recentWrong,
-        "correctStreak = " + stats.correctStreak,
-        "currentAttemptFailed = " + currentAttemptFailed,
-        "",
-        "weight = baseWeight",
-        "       + wrongCount × wrongWeight",
-        "       + recentWrong × recentWrongWeight",
-        "       - correctStreak × streakPenalty",
-        "       + overdueBonus",
-        "",
-        "baseWeight = " + basePart,
-        "wrongCount × wrongWeight = " + stats.wrongCount + " × " + settings.srs.wrongWeight + " = " + wrongPart,
-        "recentWrong × recentWrongWeight = " + stats.recentWrong + " × " + settings.srs.recentWrongWeight + " = " + recentWrongPart,
-        "correctStreak × streakPenalty = " + stats.correctStreak + " × " + settings.srs.streakPenalty + " = " + streakPart,
-        "overdueBonus = " + overduePart.toFixed(3),
-        "rawWeight = " + rawWeight.toFixed(3),
-        "finalWeight = clamp(rawWeight, " + settings.srs.minWeight + ", " + settings.srs.maxWeight + ") = " + finalWeight.toFixed(3)
+        "Weight = " + breakdown.rawWeight.toFixed(3),
       ].join("\n");
     }
 
@@ -1065,12 +1110,57 @@ full-width: true
       correctDelayInput.value = settings.srs.correctDelay;
     }
 
+    function renderCardList() {
+      toggleCardListButton.textContent = cardListOpen ? "Đóng bảng" : "Mở bảng";
+      cardListPanel.hidden = !cardListOpen;
+      cardListPanel.innerHTML = "";
+      if (!cardListOpen) return;
+
+      var list = topicCards().slice().sort(function (a, b) {
+        return dueTime(a) - dueTime(b);
+      });
+      if (!list.length) {
+        var empty = document.createElement("p");
+        empty.className = "flashcard-table-empty";
+        empty.textContent = "Topic này chưa có flashcard.";
+        cardListPanel.appendChild(empty);
+        return;
+      }
+
+      var nowMs = Date.now();
+      var table = document.createElement("table");
+      var thead = document.createElement("thead");
+      var tbody = document.createElement("tbody");
+      table.className = "flashcard-table";
+      thead.innerHTML = "<tr><th>Từ</th><th>rawWeight</th><th>Due</th></tr>";
+
+      list.forEach(function (card) {
+        var row = document.createElement("tr");
+        var wordCell = document.createElement("td");
+        var weightCell = document.createElement("td");
+        var dueCell = document.createElement("td");
+        var dueAt = card.stats && card.stats.dueAt;
+        wordCell.textContent = card.answer;
+        weightCell.textContent = weightBreakdown(card, nowMs).rawWeight.toFixed(3);
+        dueCell.textContent = formatDue(card, nowMs) + " | " + formatLocalDateTime(dueAt);
+        row.appendChild(wordCell);
+        row.appendChild(weightCell);
+        row.appendChild(dueCell);
+        tbody.appendChild(row);
+      });
+
+      table.appendChild(thead);
+      table.appendChild(tbody);
+      cardListPanel.appendChild(table);
+    }
+
     function renderSettingsControls() {
       fillSelect(studyTopicSelect, settings.activeTopic);
       fillSelect(cardTopicSelect, settings.lastTopic);
       fillSelect(deleteTopicSelect, settings.activeTopic);
       renderDeleteCardSelect();
       renderSrsControls();
+      renderCardList();
       updateDeleteTopicState();
     }
 
@@ -1264,6 +1354,7 @@ full-width: true
       settings.srs = collectSrsControls();
       saveAll();
       renderSrsControls();
+      renderCardList();
       setStatus("Đã lưu delay SRS.");
     }
 
@@ -1275,6 +1366,7 @@ full-width: true
       }));
       saveAll();
       renderSrsControls();
+      renderCardList();
       setStatus("Đã reset delay về default.");
     }
 
@@ -1296,6 +1388,11 @@ full-width: true
       setStatus("Đã reset giá trị học. Flashcard và topic vẫn được giữ nguyên.");
       saveAll();
       render();
+    }
+
+    function toggleCardList() {
+      cardListOpen = !cardListOpen;
+      renderCardList();
     }
 
     function changeStudyTopic() {
@@ -1401,6 +1498,7 @@ full-width: true
       settingsModal.classList.add("is-open");
       settingsModal.removeAttribute("aria-hidden");
       setStatus("");
+      renderSettingsControls();
       studyTopicSelect.focus();
     }
 
@@ -1442,6 +1540,7 @@ full-width: true
     saveSrsButton.addEventListener("click", saveSrsSettings);
     resetSrsButton.addEventListener("click", resetSrsSettings);
     resetAllButton.addEventListener("click", resetAllData);
+    toggleCardListButton.addEventListener("click", toggleCardList);
     deleteTopicSelect.addEventListener("change", updateDeleteTopicState);
     studyTopicSelect.addEventListener("change", changeStudyTopic);
     activeTopicLabel.addEventListener("click", switchToNextTopic);
