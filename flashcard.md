@@ -874,11 +874,25 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       return clamp(weight, settings.srs.minWeight, settings.srs.maxWeight);
     }
 
-    function formatIso(value) {
+    function formatLocalDateTime(value) {
       if (!value) return "null";
-      var time = Date.parse(value);
+      var date = value instanceof Date ? value : new Date(value);
+      var time = date.getTime();
       if (!Number.isFinite(time)) return "invalid";
-      return new Date(time).toLocaleString();
+      var offsetMinutes = -date.getTimezoneOffset();
+      var offsetSign = offsetMinutes >= 0 ? "+" : "-";
+      var absOffset = Math.abs(offsetMinutes);
+      var offsetHours = String(Math.floor(absOffset / 60)).padStart(2, "0");
+      var offsetMins = String(absOffset % 60).padStart(2, "0");
+      return [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, "0"),
+        String(date.getDate()).padStart(2, "0")
+      ].join("-") + " " + [
+        String(date.getHours()).padStart(2, "0"),
+        String(date.getMinutes()).padStart(2, "0"),
+        String(date.getSeconds()).padStart(2, "0")
+      ].join(":") + " UTC" + offsetSign + offsetHours + ":" + offsetMins;
     }
 
     function formatMs(ms) {
@@ -910,9 +924,10 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       return [
         "DEBUG MODE (Ctrl + Shift + D)",
         "id = " + card.id,
-        "dueAt = " + formatIso(stats.dueAt) + " (" + (dueMs <= 0 ? "due " + formatMs(-dueMs) + " ago" : "due in " + formatMs(dueMs)) + ")",
-        "lastSeenAt = " + formatIso(stats.lastSeenAt),
-        "lastAnsweredAt = " + formatIso(stats.lastAnsweredAt),
+        "now = " + formatLocalDateTime(new Date(nowMs)),
+        "dueAt = " + formatLocalDateTime(stats.dueAt) + " (" + (dueMs <= 0 ? "due " + formatMs(-dueMs) + " ago" : "due in " + formatMs(dueMs)) + ")",
+        "lastSeenAt = " + formatLocalDateTime(stats.lastSeenAt),
+        "lastAnsweredAt = " + formatLocalDateTime(stats.lastAnsweredAt),
         "seenCooldownLeft = " + formatMs(seenCooldownLeftMs),
         "",
         "seenCount = " + stats.seenCount,
