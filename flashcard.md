@@ -146,6 +146,18 @@ full-width: true
     color: var(--flash-danger);
   }
 
+  .flashcard-debug {
+    border-left: 2px solid var(--flash-accent);
+    color: var(--flash-muted);
+    font-size: 0.82rem;
+    line-height: 1.5;
+    margin: 0;
+    max-width: min(760px, 100%);
+    overflow: auto;
+    padding-left: 0.8rem;
+    white-space: pre-wrap;
+  }
+
   .flashcard-empty {
     display: grid;
     gap: 0.6rem;
@@ -384,6 +396,7 @@ full-width: true
       <div class="flashcard-answer-hint" id="flashcard-answer-hint"></div>
       <input class="flashcard-answer-input" id="flashcard-answer-input" type="text" autocomplete="off" placeholder="Điền đáp án" hidden>
       <div class="flashcard-feedback" id="flashcard-feedback" aria-live="polite"></div>
+      <pre class="flashcard-debug" id="flashcard-debug" hidden></pre>
     </form>
   </main>
 
@@ -576,6 +589,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
     var currentCardId = "";
     var lastSeenCardId = "";
     var answerRevealed = false;
+    var debugMode = false;
     var nextCardTimer = null;
     var lastFocusedElement = null;
 
@@ -584,6 +598,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
     var answerHint = document.getElementById("flashcard-answer-hint");
     var answerInput = document.getElementById("flashcard-answer-input");
     var feedback = document.getElementById("flashcard-feedback");
+    var debugPanel = document.getElementById("flashcard-debug");
     var progress = document.getElementById("flashcard-progress");
     var activeTopicLabel = document.getElementById("flashcard-active-topic");
     var settingsModal = document.getElementById("flashcard-settings-modal");
@@ -853,6 +868,78 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       return clamp(weight, settings.srs.minWeight, settings.srs.maxWeight);
     }
 
+    function formatIso(value) {
+      if (!value) return "null";
+      var time = Date.parse(value);
+      if (!Number.isFinite(time)) return "invalid";
+      return new Date(time).toLocaleString();
+    }
+
+    function formatMs(ms) {
+      if (!Number.isFinite(ms)) return "n/a";
+      var sign = ms < 0 ? "-" : "";
+      var value = Math.abs(ms);
+      var minutes = Math.round(value / 60000);
+      if (minutes < 60) return sign + minutes + "m";
+      var hours = Math.round(minutes / 60);
+      if (hours < 48) return sign + hours + "h";
+      return sign + Math.round(hours / 24) + "d";
+    }
+
+    function debugBreakdown(card) {
+      if (!card) return "";
+      var nowMs = Date.now();
+      var stats = card.stats || normalizeStats(null, nowMs);
+      var basePart = settings.srs.baseWeight;
+      var wrongPart = stats.wrongCount * settings.srs.wrongWeight;
+      var recentWrongPart = stats.recentWrong * settings.srs.recentWrongWeight;
+      var streakPart = stats.correctStreak * settings.srs.streakPenalty;
+      var overduePart = overdueBonus(card, nowMs);
+      var rawWeight = basePart + wrongPart + recentWrongPart - streakPart + overduePart;
+      var finalWeight = cardWeight(card, nowMs);
+      var dueMs = dueTime(card) - nowMs;
+      var seenCooldownMs = parseDurationMs(settings.srs.wrongDelay, defaultSrs.wrongDelay);
+      var seenCooldownLeftMs = Math.max(0, seenCooldownMs - (nowMs - lastSeenTime(card)));
+
+      return [
+        "DEBUG MODE (Ctrl + Shift + D)",
+        "id = " + card.id,
+        "dueAt = " + formatIso(stats.dueAt) + " (" + (dueMs <= 0 ? "due " + formatMs(-dueMs) + " ago" : "due in " + formatMs(dueMs)) + ")",
+        "lastSeenAt = " + formatIso(stats.lastSeenAt),
+        "lastAnsweredAt = " + formatIso(stats.lastAnsweredAt),
+        "seenCooldownLeft = " + formatMs(seenCooldownLeftMs),
+        "",
+        "seenCount = " + stats.seenCount,
+        "correctCount = " + stats.correctCount,
+        "wrongCount = " + stats.wrongCount,
+        "recentWrong = " + stats.recentWrong,
+        "correctStreak = " + stats.correctStreak,
+        "",
+        "weight = baseWeight",
+        "       + wrongCount × wrongWeight",
+        "       + recentWrong × recentWrongWeight",
+        "       - correctStreak × streakPenalty",
+        "       + overdueBonus",
+        "",
+        "baseWeight = " + basePart,
+        "wrongCount × wrongWeight = " + stats.wrongCount + " × " + settings.srs.wrongWeight + " = " + wrongPart,
+        "recentWrong × recentWrongWeight = " + stats.recentWrong + " × " + settings.srs.recentWrongWeight + " = " + recentWrongPart,
+        "correctStreak × streakPenalty = " + stats.correctStreak + " × " + settings.srs.streakPenalty + " = " + streakPart,
+        "overdueBonus = " + overduePart.toFixed(3),
+        "rawWeight = " + rawWeight.toFixed(3),
+        "finalWeight = clamp(rawWeight, " + settings.srs.minWeight + ", " + settings.srs.maxWeight + ") = " + finalWeight.toFixed(3)
+      ].join("\n");
+    }
+
+    function renderDebug(card) {
+      debugPanel.hidden = !debugMode;
+      if (!debugMode) {
+        debugPanel.textContent = "";
+        return;
+      }
+      debugPanel.textContent = card ? debugBreakdown(card) : "DEBUG MODE (Ctrl + Shift + D)\nKhông có thẻ trong topic hiện tại.";
+    }
+
     function weightedRandomCard(candidates, nowMs) {
       var totalWeight = candidates.reduce(function (sum, card) {
         return sum + cardWeight(card, nowMs);
@@ -1006,6 +1093,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
         setFeedback("", "");
         answerInput.value = "";
         answerInput.hidden = true;
+        renderDebug(null);
         return;
       }
 
@@ -1020,6 +1108,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       } else {
         setFeedback("", "");
       }
+      renderDebug(card);
     }
 
     function render() {
@@ -1303,6 +1392,12 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
     });
 
     document.addEventListener("keydown", function (event) {
+      if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "d") {
+        event.preventDefault();
+        debugMode = !debugMode;
+        renderCard();
+        return;
+      }
       if (event.ctrlKey && event.key === ",") {
         event.preventDefault();
         if (settingsModal.classList.contains("is-open")) {
