@@ -558,7 +558,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
 
       <footer class="flashcard-settings-footer">
         <p class="flashcard-status" id="flashcard-status" role="status" aria-live="polite"></p>
-        <button class="flashcard-button danger" id="flashcard-reset-all" type="button">Reset toàn bộ</button>
+        <button class="flashcard-button danger" id="flashcard-reset-all" type="button">Reset giá trị học</button>
       </footer>
     </section>
   </div>
@@ -1358,25 +1358,21 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
     }
 
     function resetAllData() {
-      var confirmed = window.confirm("Reset toàn bộ flashcard, topic, stats và SRS settings?");
+      var confirmed = window.confirm("Reset toàn bộ giá trị học của flashcard? Nội dung thẻ và topic sẽ được giữ nguyên.");
       if (!confirmed) return;
       clearNextCardTimer();
-      window.localStorage.removeItem(cardsKey);
-      window.localStorage.removeItem(settingsKey);
-      cards = [];
-      settings = {
-        topics: [defaultTopic],
-        activeTopic: defaultTopic,
-        lastTopic: defaultTopic,
-        srs: Object.assign({}, defaultSrs)
-      };
+      var nowMs = Date.now();
+      cards = cards.map(function (card) {
+        card.stats = defaultStats(nowMs, 0);
+        return card;
+      });
       currentCardId = "";
       lastSeenCardId = "";
       resetAttemptState();
       answerInput.value = "";
       setFeedback("", "");
       setCreateStatus("");
-      setStatus("Đã reset toàn bộ dữ liệu.");
+      setStatus("Đã reset giá trị học. Flashcard và topic vẫn được giữ nguyên.");
       saveAll();
       render();
     }
