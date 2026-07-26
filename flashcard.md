@@ -412,6 +412,10 @@ full-width: true
     background: rgba(19, 158, 224, 0.08);
   }
 
+  .flashcard-table tbody tr.is-selected {
+    background: rgba(19, 158, 224, 0.12);
+  }
+
   .flashcard-table td:nth-child(2) {
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
@@ -458,6 +462,37 @@ full-width: true
     border-color: var(--flash-accent);
     box-shadow: 0 0 0 3px rgba(19, 158, 224, 0.16);
     outline: none;
+  }
+
+  .flashcard-card-editor {
+    display: grid;
+    gap: 0.85rem;
+    border: 1px solid var(--flash-border);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.12);
+    padding: 0.9rem;
+  }
+
+  .flashcard-card-editor[hidden] {
+    display: none;
+  }
+
+  .flashcard-table-word {
+    border: 0;
+    background: transparent;
+    color: var(--flash-text);
+    padding: 0;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .flashcard-table-word:hover,
+  .flashcard-table-word:focus {
+    color: #ffffff;
+    outline: none;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 
   @media (max-width: 640px) {
@@ -623,6 +658,23 @@ full-width: true
           <label for="flashcard-card-list-search">Search từ</label>
           <input id="flashcard-card-list-search" type="search" autocomplete="off" placeholder="Nhập từ cần tìm">
         </div>
+        <form class="flashcard-card-editor" id="flashcard-card-editor" hidden>
+          <div class="flashcard-grid">
+            <div class="flashcard-field full">
+              <label for="flashcard-edit-prompt">Câu gợi ý</label>
+              <textarea id="flashcard-edit-prompt" required></textarea>
+            </div>
+            <div class="flashcard-field full">
+              <label for="flashcard-edit-answer">Đáp án</label>
+              <textarea id="flashcard-edit-answer" required></textarea>
+            </div>
+          </div>
+          <div class="flashcard-actions">
+            <button class="flashcard-button primary" type="submit">Lưu thẻ</button>
+            <button class="flashcard-button" id="flashcard-close-card-editor" type="button">Đóng chi tiết</button>
+          </div>
+          <p class="flashcard-status" id="flashcard-card-list-status" role="status" aria-live="polite"></p>
+        </form>
         <div class="flashcard-table-wrap" id="flashcard-card-list-panel"></div>
       </div>
     </section>
@@ -733,9 +785,15 @@ full-width: true
     var resetAllButton = document.getElementById("flashcard-reset-all");
     var toggleCardListButton = document.getElementById("flashcard-toggle-card-list");
     var cardListSearchInput = document.getElementById("flashcard-card-list-search");
+    var cardEditor = document.getElementById("flashcard-card-editor");
+    var editPromptInput = document.getElementById("flashcard-edit-prompt");
+    var editAnswerInput = document.getElementById("flashcard-edit-answer");
+    var closeCardEditorButton = document.getElementById("flashcard-close-card-editor");
+    var cardListStatus = document.getElementById("flashcard-card-list-status");
     var cardListPanel = document.getElementById("flashcard-card-list-panel");
     var status = document.getElementById("flashcard-status");
     var createStatus = document.getElementById("flashcard-create-status");
+    var selectedCardId = "";
 
     function createId() {
       if (window.crypto && typeof window.crypto.randomUUID === "function") {
@@ -877,6 +935,10 @@ full-width: true
 
     function setCreateStatus(message) {
       createStatus.textContent = message || "";
+    }
+
+    function setCardListStatus(message) {
+      cardListStatus.textContent = message || "";
     }
 
     function setFeedback(state, message, answer) {
@@ -1157,6 +1219,58 @@ full-width: true
       return value.length > 80 ? value.slice(0, 77) + "..." : value;
     }
 
+    function selectedCard() {
+      var card = cards.find(function (item) {
+        return item.id === selectedCardId;
+      }) || null;
+      if (!card || card.topic !== settings.activeTopic) return null;
+      return card;
+    }
+
+    function selectCardForEdit(cardId) {
+      selectedCardId = cardId;
+      setCardListStatus("");
+      renderCardList();
+      editPromptInput.focus();
+    }
+
+    function closeCardEditor() {
+      selectedCardId = "";
+      renderCardList();
+    }
+
+    function saveCardEdit(event) {
+      event.preventDefault();
+      var card = selectedCard();
+      if (!card) return;
+      var prompt = editPromptInput.value.trim();
+      var answer = editAnswerInput.value.trim();
+      if (!prompt || !answer) {
+        setCardListStatus("Vui lòng nhập đủ câu gợi ý và đáp án.");
+        return;
+      }
+      card.prompt = prompt;
+      card.answer = answer;
+      saveAll();
+      renderDeleteCardSelect();
+      renderCardList();
+      renderCard();
+      setCardListStatus("Đã lưu thẻ.");
+    }
+
+    function renderCardEditor() {
+      var card = selectedCard();
+      cardEditor.hidden = !card;
+      if (!card) {
+        editPromptInput.value = "";
+        editAnswerInput.value = "";
+        setCardListStatus("");
+        return;
+      }
+      editPromptInput.value = card.prompt;
+      editAnswerInput.value = card.answer;
+    }
+
     function renderDeleteCardSelect() {
       var list = topicCards();
       deleteCardSelect.innerHTML = "";
@@ -1178,6 +1292,7 @@ full-width: true
 
     function renderCardList() {
       cardListPanel.innerHTML = "";
+      renderCardEditor();
 
       var list = topicCards().slice().sort(function (a, b) {
         return dueTime(a) - dueTime(b);
@@ -1215,8 +1330,14 @@ full-width: true
         var wordCell = document.createElement("td");
         var weightCell = document.createElement("td");
         var dueCell = document.createElement("td");
+        var wordButton = document.createElement("button");
         var dueAt = card.stats && card.stats.dueAt;
-        wordCell.textContent = card.answer;
+        if (card.id === selectedCardId) row.className = "is-selected";
+        wordButton.className = "flashcard-table-word";
+        wordButton.type = "button";
+        wordButton.dataset.cardId = card.id;
+        wordButton.textContent = card.answer;
+        wordCell.appendChild(wordButton);
         weightCell.textContent = weightBreakdown(card, nowMs).rawWeight.toFixed(3);
         dueCell.textContent = formatDue(card, nowMs) + " | " + formatLocalDateTime(dueAt);
         row.appendChild(wordCell);
@@ -1351,6 +1472,7 @@ full-width: true
       settings.topics.push(topic);
       settings.activeTopic = topic;
       settings.lastTopic = topic;
+      selectedCardId = "";
       newTopicInput.value = "";
       currentCardId = "";
       lastSeenCardId = "";
@@ -1386,6 +1508,7 @@ full-width: true
       settings.lastTopic = settings.activeTopic;
       currentCardId = "";
       lastSeenCardId = "";
+      selectedCardId = "";
       resetAttemptState();
       saveAll();
       setStatus("Đã xóa topic.");
@@ -1410,6 +1533,7 @@ full-width: true
         currentCardId = "";
         lastSeenCardId = "";
       }
+      if (selectedCardId === cardId) selectedCardId = "";
       resetAttemptState();
       answerInput.value = "";
       saveAll();
@@ -1470,6 +1594,7 @@ full-width: true
       settings.activeTopic = normalizeTopic(studyTopicSelect.value);
       currentCardId = "";
       lastSeenCardId = "";
+      selectedCardId = "";
       resetAttemptState();
       saveAll();
       render();
@@ -1617,6 +1742,7 @@ full-width: true
 
     form.addEventListener("submit", addCard);
     answerForm.addEventListener("submit", checkAnswer);
+    cardEditor.addEventListener("submit", saveCardEdit);
     clearFormButton.addEventListener("click", clearForm);
     addTopicButton.addEventListener("click", addTopic);
     deleteTopicButton.addEventListener("click", deleteTopic);
@@ -1626,6 +1752,7 @@ full-width: true
     resetAllButton.addEventListener("click", resetAllData);
     toggleCardListButton.addEventListener("click", openCardList);
     cardListSearchInput.addEventListener("input", renderCardList);
+    closeCardEditorButton.addEventListener("click", closeCardEditor);
     deleteTopicSelect.addEventListener("change", updateDeleteTopicState);
     studyTopicSelect.addEventListener("change", changeStudyTopic);
     activeTopicLabel.addEventListener("click", switchToNextTopic);
@@ -1645,6 +1772,11 @@ full-width: true
       var button = event.target.closest("button[data-ratio]");
       if (!button) return;
       dropDueByRatio(Number(button.dataset.ratio));
+    });
+    cardListPanel.addEventListener("click", function (event) {
+      var button = event.target.closest(".flashcard-table-word");
+      if (!button) return;
+      selectCardForEdit(button.dataset.cardId);
     });
 
     document.addEventListener("keydown", function (event) {
