@@ -259,6 +259,19 @@ full-width: true
     resize: vertical;
   }
 
+  .flashcard-formula {
+    margin: 0;
+    border: 1px solid var(--flash-border);
+    border-radius: 6px;
+    background: var(--flash-bg);
+    color: var(--flash-muted);
+    padding: 0.8rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    overflow: auto;
+    white-space: pre;
+  }
+
   .flashcard-field input:focus,
   .flashcard-field select:focus,
   .flashcard-field textarea:focus {
@@ -422,6 +435,74 @@ full-width: true
             <button class="flashcard-button danger" id="flashcard-delete-card-button" type="button">Xóa thẻ</button>
           </div>
         </section>
+
+        <section class="flashcard-section" aria-labelledby="flashcard-srs-settings-title">
+          <h3 id="flashcard-srs-settings-title">SRS</h3>
+          <div class="flashcard-field full">
+            <label>Công thức</label>
+            <pre class="flashcard-formula">new card: dueAt = now + newDelay
+wrong answer: dueAt = now + wrongDelay
+correct answer: dueAt = now + correctDelay × correctGrowth^(correctStreak - 1)
+
+weight = baseWeight
+       + wrongCount × wrongWeight
+       + recentWrong × recentWrongWeight
+       - correctStreak × streakPenalty
+       + overdueBonus
+
+weight = clamp(weight, minWeight, maxWeight)</pre>
+          </div>
+          <div class="flashcard-grid">
+            <div class="flashcard-field">
+              <label for="flashcard-new-delay">newDelay</label>
+              <input id="flashcard-new-delay" type="text" inputmode="text" placeholder="10m">
+            </div>
+            <div class="flashcard-field">
+              <label for="flashcard-wrong-delay">wrongDelay</label>
+              <input id="flashcard-wrong-delay" type="text" inputmode="text" placeholder="2m">
+            </div>
+            <div class="flashcard-field">
+              <label for="flashcard-correct-delay">correctDelay</label>
+              <input id="flashcard-correct-delay" type="text" inputmode="text" placeholder="30m">
+            </div>
+            <div class="flashcard-field">
+              <label for="flashcard-correct-growth">correctGrowth</label>
+              <input id="flashcard-correct-growth" type="number" step="0.1" min="1">
+            </div>
+            <div class="flashcard-field">
+              <label for="flashcard-base-weight">baseWeight</label>
+              <input id="flashcard-base-weight" type="number" step="0.1" min="0">
+            </div>
+            <div class="flashcard-field">
+              <label for="flashcard-wrong-weight">wrongWeight</label>
+              <input id="flashcard-wrong-weight" type="number" step="0.1" min="0">
+            </div>
+            <div class="flashcard-field">
+              <label for="flashcard-recent-wrong-weight">recentWrongWeight</label>
+              <input id="flashcard-recent-wrong-weight" type="number" step="0.1" min="0">
+            </div>
+            <div class="flashcard-field">
+              <label for="flashcard-streak-penalty">streakPenalty</label>
+              <input id="flashcard-streak-penalty" type="number" step="0.1" min="0">
+            </div>
+            <div class="flashcard-field">
+              <label for="flashcard-overdue-weight">overdueWeight</label>
+              <input id="flashcard-overdue-weight" type="number" step="0.1" min="0">
+            </div>
+            <div class="flashcard-field">
+              <label for="flashcard-min-weight">minWeight</label>
+              <input id="flashcard-min-weight" type="number" step="0.1" min="0">
+            </div>
+            <div class="flashcard-field">
+              <label for="flashcard-max-weight">maxWeight</label>
+              <input id="flashcard-max-weight" type="number" step="0.1" min="0.1">
+            </div>
+          </div>
+          <div class="flashcard-actions">
+            <button class="flashcard-button primary" id="flashcard-save-srs" type="button">Lưu SRS</button>
+            <button class="flashcard-button" id="flashcard-reset-srs" type="button">Reset default</button>
+          </div>
+        </section>
       </div>
 
       <footer class="flashcard-settings-footer">
@@ -472,13 +553,28 @@ full-width: true
     var cardsKey = "qiocas.flashcards.v1";
     var settingsKey = "qiocas.flashcards.settings.v1";
     var defaultTopic = "English";
+    var defaultSrs = {
+      newDelay: "10m",
+      wrongDelay: "2m",
+      correctDelay: "30m",
+      correctGrowth: 2,
+      baseWeight: 1,
+      wrongWeight: 2,
+      recentWrongWeight: 4,
+      streakPenalty: 0.8,
+      overdueWeight: 1,
+      minWeight: 0.2,
+      maxWeight: 10
+    };
     var cards = [];
     var settings = {
       topics: [defaultTopic],
       activeTopic: defaultTopic,
-      lastTopic: defaultTopic
+      lastTopic: defaultTopic,
+      srs: Object.assign({}, defaultSrs)
     };
     var currentCardId = "";
+    var lastSeenCardId = "";
     var answerRevealed = false;
     var nextCardTimer = null;
     var lastFocusedElement = null;
@@ -506,6 +602,19 @@ full-width: true
     var deleteTopicButton = document.getElementById("flashcard-delete-topic-button");
     var deleteCardSelect = document.getElementById("flashcard-delete-card");
     var deleteCardButton = document.getElementById("flashcard-delete-card-button");
+    var newDelayInput = document.getElementById("flashcard-new-delay");
+    var wrongDelayInput = document.getElementById("flashcard-wrong-delay");
+    var correctDelayInput = document.getElementById("flashcard-correct-delay");
+    var correctGrowthInput = document.getElementById("flashcard-correct-growth");
+    var baseWeightInput = document.getElementById("flashcard-base-weight");
+    var wrongWeightInput = document.getElementById("flashcard-wrong-weight");
+    var recentWrongWeightInput = document.getElementById("flashcard-recent-wrong-weight");
+    var streakPenaltyInput = document.getElementById("flashcard-streak-penalty");
+    var overdueWeightInput = document.getElementById("flashcard-overdue-weight");
+    var minWeightInput = document.getElementById("flashcard-min-weight");
+    var maxWeightInput = document.getElementById("flashcard-max-weight");
+    var saveSrsButton = document.getElementById("flashcard-save-srs");
+    var resetSrsButton = document.getElementById("flashcard-reset-srs");
     var status = document.getElementById("flashcard-status");
     var createStatus = document.getElementById("flashcard-create-status");
 
@@ -539,6 +648,93 @@ full-width: true
       return found || value;
     }
 
+    function isDurationString(value) {
+      return /^(\d+(?:\.\d+)?)\s*([mhd])?$/.test(String(value || "").trim().toLowerCase());
+    }
+
+    function normalizeDurationString(value, fallbackValue) {
+      var source = String(value || "").trim().toLowerCase();
+      return isDurationString(source) ? source : fallbackValue;
+    }
+
+    function parseDurationMs(value, fallbackValue) {
+      var source = String(value || "").trim().toLowerCase();
+      var fallbackSource = String(fallbackValue || "").trim().toLowerCase();
+      if (!isDurationString(source)) source = isDurationString(fallbackSource) ? fallbackSource : "0m";
+      var match = source.match(/^(\d+(?:\.\d+)?)\s*([mhd])?$/);
+      if (!match) return 0;
+      var amount = Number(match[1]);
+      if (!Number.isFinite(amount) || amount < 0) return 0;
+      var unit = match[2] || "m";
+      if (unit === "d") return amount * 24 * 60 * 60 * 1000;
+      if (unit === "h") return amount * 60 * 60 * 1000;
+      return amount * 60 * 1000;
+    }
+
+    function parseNumber(value, fallbackValue, minValue) {
+      var number = Number(value);
+      if (!Number.isFinite(number)) return fallbackValue;
+      if (typeof minValue === "number" && number < minValue) return fallbackValue;
+      return number;
+    }
+
+    function clamp(value, minValue, maxValue) {
+      return Math.min(Math.max(value, minValue), maxValue);
+    }
+
+    function normalizeSrsConfig(srs) {
+      var source = srs && typeof srs === "object" ? srs : {};
+      var nextSrs = {
+        newDelay: normalizeDurationString(source.newDelay, defaultSrs.newDelay),
+        wrongDelay: normalizeDurationString(source.wrongDelay, defaultSrs.wrongDelay),
+        correctDelay: normalizeDurationString(source.correctDelay, defaultSrs.correctDelay),
+        correctGrowth: parseNumber(source.correctGrowth, defaultSrs.correctGrowth, 1),
+        baseWeight: parseNumber(source.baseWeight, defaultSrs.baseWeight, 0),
+        wrongWeight: parseNumber(source.wrongWeight, defaultSrs.wrongWeight, 0),
+        recentWrongWeight: parseNumber(source.recentWrongWeight, defaultSrs.recentWrongWeight, 0),
+        streakPenalty: parseNumber(source.streakPenalty, defaultSrs.streakPenalty, 0),
+        overdueWeight: parseNumber(source.overdueWeight, defaultSrs.overdueWeight, 0),
+        minWeight: parseNumber(source.minWeight, defaultSrs.minWeight, 0),
+        maxWeight: parseNumber(source.maxWeight, defaultSrs.maxWeight, 0.1)
+      };
+      if (nextSrs.maxWeight < nextSrs.minWeight) nextSrs.maxWeight = nextSrs.minWeight;
+      return nextSrs;
+    }
+
+    function normalizeTimestamp(value, fallbackValue) {
+      var time = Date.parse(value);
+      if (Number.isFinite(time)) return new Date(time).toISOString();
+      return fallbackValue;
+    }
+
+    function defaultStats(nowMs, dueDelayMs) {
+      return {
+        seenCount: 0,
+        correctCount: 0,
+        wrongCount: 0,
+        recentWrong: 0,
+        correctStreak: 0,
+        lastSeenAt: null,
+        lastAnsweredAt: null,
+        dueAt: new Date(nowMs + dueDelayMs).toISOString()
+      };
+    }
+
+    function normalizeStats(stats, nowMs) {
+      var source = stats && typeof stats === "object" ? stats : {};
+      var defaults = defaultStats(nowMs, 0);
+      return {
+        seenCount: Math.max(0, Math.floor(parseNumber(source.seenCount, defaults.seenCount, 0))),
+        correctCount: Math.max(0, Math.floor(parseNumber(source.correctCount, defaults.correctCount, 0))),
+        wrongCount: Math.max(0, Math.floor(parseNumber(source.wrongCount, defaults.wrongCount, 0))),
+        recentWrong: Math.max(0, Math.floor(parseNumber(source.recentWrong, defaults.recentWrong, 0))),
+        correctStreak: Math.max(0, Math.floor(parseNumber(source.correctStreak, defaults.correctStreak, 0))),
+        lastSeenAt: source.lastSeenAt ? normalizeTimestamp(source.lastSeenAt, null) : null,
+        lastAnsweredAt: source.lastAnsweredAt ? normalizeTimestamp(source.lastAnsweredAt, null) : null,
+        dueAt: normalizeTimestamp(source.dueAt, defaults.dueAt)
+      };
+    }
+
     function normalizeCard(card) {
       if (!card || typeof card !== "object") return null;
       var prompt = typeof card.prompt === "string" ? card.prompt.trim() : "";
@@ -551,6 +747,7 @@ full-width: true
         prompt: prompt,
         answer: answer,
         topic: normalizeTopic(card.topic),
+        stats: normalizeStats(card.stats, Date.now()),
         createdAt: typeof card.createdAt === "string" && card.createdAt ? card.createdAt : new Date().toISOString()
       };
     }
@@ -604,6 +801,7 @@ full-width: true
       settings.topics = uniqTopics(stored.topics);
       settings.activeTopic = normalizeTopic(stored.activeTopic);
       settings.lastTopic = normalizeTopic(stored.lastTopic);
+      settings.srs = normalizeSrsConfig(stored.srs);
       if (settings.topics.indexOf(settings.activeTopic) === -1) settings.activeTopic = defaultTopic;
       if (settings.topics.indexOf(settings.lastTopic) === -1) settings.lastTopic = settings.activeTopic;
     }
@@ -628,16 +826,90 @@ full-width: true
       });
     }
 
+    function dueTime(card) {
+      var time = Date.parse(card.stats && card.stats.dueAt);
+      return Number.isFinite(time) ? time : 0;
+    }
+
+    function lastSeenTime(card) {
+      var time = Date.parse(card.stats && card.stats.lastSeenAt);
+      return Number.isFinite(time) ? time : 0;
+    }
+
+    function overdueBonus(card, nowMs) {
+      var overdueMs = Math.max(0, nowMs - dueTime(card));
+      var correctDelayMs = parseDurationMs(settings.srs.correctDelay, defaultSrs.correctDelay);
+      if (!correctDelayMs) return 0;
+      return Math.min(1, overdueMs / correctDelayMs) * settings.srs.overdueWeight;
+    }
+
+    function cardWeight(card, nowMs) {
+      var stats = card.stats || normalizeStats(null, nowMs);
+      var weight = settings.srs.baseWeight
+        + stats.wrongCount * settings.srs.wrongWeight
+        + stats.recentWrong * settings.srs.recentWrongWeight
+        - stats.correctStreak * settings.srs.streakPenalty
+        + overdueBonus(card, nowMs);
+      return clamp(weight, settings.srs.minWeight, settings.srs.maxWeight);
+    }
+
+    function weightedRandomCard(candidates, nowMs) {
+      var totalWeight = candidates.reduce(function (sum, card) {
+        return sum + cardWeight(card, nowMs);
+      }, 0);
+      if (totalWeight <= 0) return candidates[Math.floor(Math.random() * candidates.length)];
+      var point = Math.random() * totalWeight;
+      for (var i = 0; i < candidates.length; i += 1) {
+        point -= cardWeight(candidates[i], nowMs);
+        if (point <= 0) return candidates[i];
+      }
+      return candidates[candidates.length - 1];
+    }
+
+    function pickNextCard(list, previousId) {
+      if (!list.length) return null;
+      if (list.length === 1) return list[0];
+      var nowMs = Date.now();
+      var pool = list.filter(function (card) {
+        return dueTime(card) <= nowMs;
+      });
+      if (!pool.length) {
+        pool = list.slice().sort(function (a, b) {
+          return dueTime(a) - dueTime(b);
+        }).slice(0, 1);
+      }
+      if (pool.length > 1) {
+        pool = pool.filter(function (card) {
+          return card.id !== previousId;
+        });
+      }
+      if (pool.length > 1) {
+        var seenCooldownMs = parseDurationMs(settings.srs.wrongDelay, defaultSrs.wrongDelay);
+        var cooledPool = pool.filter(function (card) {
+          return nowMs - lastSeenTime(card) >= seenCooldownMs;
+        });
+        if (cooledPool.length) pool = cooledPool;
+      }
+      return weightedRandomCard(pool, nowMs);
+    }
+
     function pickRandomCardId(list, previousId) {
-      if (!list.length) {
-        return "";
-      }
-      if (list.length === 1) return list[0].id;
-      var nextCard = list[Math.floor(Math.random() * list.length)];
-      while (nextCard.id === previousId) {
-        nextCard = list[Math.floor(Math.random() * list.length)];
-      }
-      return nextCard.id;
+      var nextCard = pickNextCard(list, previousId);
+      return nextCard ? nextCard.id : "";
+    }
+
+    function markCardSeen(card) {
+      if (!card) return;
+      card.stats = normalizeStats(card.stats, Date.now());
+      card.stats.seenCount += 1;
+      card.stats.lastSeenAt = new Date().toISOString();
+    }
+
+    function syncCardSeen(card) {
+      if (!card || card.id === lastSeenCardId) return;
+      markCardSeen(card);
+      lastSeenCardId = card.id;
+      saveAll();
     }
 
     function normalizeAnswer(value) {
@@ -693,11 +965,26 @@ full-width: true
       deleteCardButton.disabled = !list.length;
     }
 
+    function renderSrsControls() {
+      newDelayInput.value = settings.srs.newDelay;
+      wrongDelayInput.value = settings.srs.wrongDelay;
+      correctDelayInput.value = settings.srs.correctDelay;
+      correctGrowthInput.value = settings.srs.correctGrowth;
+      baseWeightInput.value = settings.srs.baseWeight;
+      wrongWeightInput.value = settings.srs.wrongWeight;
+      recentWrongWeightInput.value = settings.srs.recentWrongWeight;
+      streakPenaltyInput.value = settings.srs.streakPenalty;
+      overdueWeightInput.value = settings.srs.overdueWeight;
+      minWeightInput.value = settings.srs.minWeight;
+      maxWeightInput.value = settings.srs.maxWeight;
+    }
+
     function renderSettingsControls() {
       fillSelect(studyTopicSelect, settings.activeTopic);
       fillSelect(cardTopicSelect, settings.lastTopic);
       fillSelect(deleteTopicSelect, settings.activeTopic);
       renderDeleteCardSelect();
+      renderSrsControls();
       updateDeleteTopicState();
     }
 
@@ -712,6 +999,7 @@ full-width: true
 
       if (!list.length) {
         currentCardId = "";
+        lastSeenCardId = "";
         promptText.innerHTML = '<span class="flashcard-empty"><strong>Chưa có flashcard</strong><span>Dùng Ctrl + Enter để tạo thẻ cho topic này.</span></span>';
         answerHint.textContent = "";
         answerHint.hidden = true;
@@ -722,6 +1010,7 @@ full-width: true
       }
 
       var card = currentCard();
+      syncCardSeen(card);
       promptText.textContent = card.prompt;
       answerHint.textContent = "Hint: " + maskAnswer(card.answer);
       answerHint.hidden = false;
@@ -748,11 +1037,13 @@ full-width: true
       event.preventDefault();
       clearNextCardTimer();
       var selectedTopic = normalizeTopic(cardTopicSelect.value);
+      var nowMs = Date.now();
       var card = normalizeCard({
         id: createId(),
         prompt: promptInput.value,
         answer: answerCreateInput.value,
         topic: selectedTopic,
+        stats: defaultStats(nowMs, parseDurationMs(settings.srs.newDelay, defaultSrs.newDelay)),
         createdAt: new Date().toISOString()
       });
 
@@ -764,7 +1055,8 @@ full-width: true
       cards.push(card);
       settings.lastTopic = selectedTopic;
       settings.activeTopic = selectedTopic;
-      currentCardId = card.id;
+      currentCardId = "";
+      lastSeenCardId = "";
       answerRevealed = false;
       saveAll();
       clearForm();
@@ -791,6 +1083,7 @@ full-width: true
       settings.lastTopic = topic;
       newTopicInput.value = "";
       currentCardId = "";
+      lastSeenCardId = "";
       answerRevealed = false;
       saveAll();
       setStatus("Đã thêm topic.");
@@ -822,6 +1115,7 @@ full-width: true
       settings.activeTopic = settings.topics[0] || defaultTopic;
       settings.lastTopic = settings.activeTopic;
       currentCardId = "";
+      lastSeenCardId = "";
       answerRevealed = false;
       saveAll();
       setStatus("Đã xóa topic.");
@@ -842,7 +1136,10 @@ full-width: true
       cards = cards.filter(function (item) {
         return item.id !== cardId;
       });
-      if (currentCardId === cardId) currentCardId = "";
+      if (currentCardId === cardId) {
+        currentCardId = "";
+        lastSeenCardId = "";
+      }
       answerRevealed = false;
       answerInput.value = "";
       saveAll();
@@ -850,10 +1147,41 @@ full-width: true
       render();
     }
 
+    function collectSrsControls() {
+      return normalizeSrsConfig({
+        newDelay: newDelayInput.value,
+        wrongDelay: wrongDelayInput.value,
+        correctDelay: correctDelayInput.value,
+        correctGrowth: correctGrowthInput.value,
+        baseWeight: baseWeightInput.value,
+        wrongWeight: wrongWeightInput.value,
+        recentWrongWeight: recentWrongWeightInput.value,
+        streakPenalty: streakPenaltyInput.value,
+        overdueWeight: overdueWeightInput.value,
+        minWeight: minWeightInput.value,
+        maxWeight: maxWeightInput.value
+      });
+    }
+
+    function saveSrsSettings() {
+      settings.srs = collectSrsControls();
+      saveAll();
+      renderSrsControls();
+      setStatus("Đã lưu SRS.");
+    }
+
+    function resetSrsSettings() {
+      settings.srs = Object.assign({}, defaultSrs);
+      saveAll();
+      renderSrsControls();
+      setStatus("Đã reset SRS về default.");
+    }
+
     function changeStudyTopic() {
       clearNextCardTimer();
       settings.activeTopic = normalizeTopic(studyTopicSelect.value);
       currentCardId = "";
+      lastSeenCardId = "";
       answerRevealed = false;
       saveAll();
       render();
@@ -866,6 +1194,7 @@ full-width: true
       var nextTopicIndex = currentTopicIndex === -1 ? 0 : (currentTopicIndex + 1) % settings.topics.length;
       settings.activeTopic = settings.topics[nextTopicIndex];
       currentCardId = "";
+      lastSeenCardId = "";
       answerRevealed = false;
       saveAll();
       render();
@@ -876,7 +1205,15 @@ full-width: true
       clearNextCardTimer();
       var card = currentCard();
       if (!card) return;
+      var nowMs = Date.now();
+      card.stats = normalizeStats(card.stats, nowMs);
       if (normalizeAnswer(answerInput.value) === normalizeAnswer(card.answer)) {
+        card.stats.correctCount += 1;
+        card.stats.correctStreak += 1;
+        card.stats.recentWrong = Math.max(0, card.stats.recentWrong - 1);
+        card.stats.lastAnsweredAt = new Date(nowMs).toISOString();
+        card.stats.dueAt = new Date(nowMs + parseDurationMs(settings.srs.correctDelay, defaultSrs.correctDelay) * Math.pow(settings.srs.correctGrowth, card.stats.correctStreak - 1)).toISOString();
+        saveAll();
         answerRevealed = false;
         setFeedback("correct", "Đáp án chính xác");
         nextCardTimer = window.setTimeout(function () {
@@ -885,6 +1222,12 @@ full-width: true
         }, 700);
         return;
       }
+      card.stats.wrongCount += 1;
+      card.stats.recentWrong += 1;
+      card.stats.correctStreak = 0;
+      card.stats.lastAnsweredAt = new Date(nowMs).toISOString();
+      card.stats.dueAt = new Date(nowMs + parseDurationMs(settings.srs.wrongDelay, defaultSrs.wrongDelay)).toISOString();
+      saveAll();
       answerRevealed = true;
       renderCard();
       answerInput.select();
@@ -895,6 +1238,7 @@ full-width: true
       if (!list.length) return;
       clearNextCardTimer();
       currentCardId = pickRandomCardId(list, currentCardId);
+      lastSeenCardId = "";
       answerRevealed = false;
       answerInput.value = "";
       renderCard();
@@ -944,6 +1288,8 @@ full-width: true
     addTopicButton.addEventListener("click", addTopic);
     deleteTopicButton.addEventListener("click", deleteTopic);
     deleteCardButton.addEventListener("click", deleteCard);
+    saveSrsButton.addEventListener("click", saveSrsSettings);
+    resetSrsButton.addEventListener("click", resetSrsSettings);
     deleteTopicSelect.addEventListener("change", updateDeleteTopicState);
     studyTopicSelect.addEventListener("change", changeStudyTopic);
     activeTopicLabel.addEventListener("click", switchToNextTopic);
