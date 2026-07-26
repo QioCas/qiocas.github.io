@@ -1332,6 +1332,10 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       answerRevealed = true;
       renderCard();
       answerInput.select();
+      nextCardTimer = window.setTimeout(function () {
+        showRandomCard();
+        nextCardTimer = null;
+      }, 1500);
     }
 
     function showRandomCard() {
