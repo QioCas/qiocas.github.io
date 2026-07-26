@@ -432,6 +432,34 @@ full-width: true
     font-size: 0.9rem;
   }
 
+  .flashcard-table-search {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .flashcard-table-search label {
+    margin: 0;
+    color: var(--flash-muted);
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .flashcard-table-search input {
+    width: 100%;
+    border: 1px solid var(--flash-border);
+    border-radius: 6px;
+    background: var(--flash-bg);
+    color: var(--flash-text);
+    padding: 0.72rem 0.78rem;
+    font: inherit;
+  }
+
+  .flashcard-table-search input:focus {
+    border-color: var(--flash-accent);
+    box-shadow: 0 0 0 3px rgba(19, 158, 224, 0.16);
+    outline: none;
+  }
+
   @media (max-width: 640px) {
     .flashcard-app {
       min-height: calc(100vh - 86px);
@@ -591,6 +619,10 @@ full-width: true
       </header>
 
       <div class="flashcard-settings-body">
+        <div class="flashcard-table-search">
+          <label for="flashcard-card-list-search">Search từ</label>
+          <input id="flashcard-card-list-search" type="search" autocomplete="off" placeholder="Nhập từ cần tìm">
+        </div>
         <div class="flashcard-table-wrap" id="flashcard-card-list-panel"></div>
       </div>
     </section>
@@ -700,6 +732,7 @@ full-width: true
     var resetSrsButton = document.getElementById("flashcard-reset-srs");
     var resetAllButton = document.getElementById("flashcard-reset-all");
     var toggleCardListButton = document.getElementById("flashcard-toggle-card-list");
+    var cardListSearchInput = document.getElementById("flashcard-card-list-search");
     var cardListPanel = document.getElementById("flashcard-card-list-panel");
     var status = document.getElementById("flashcard-status");
     var createStatus = document.getElementById("flashcard-create-status");
@@ -1149,11 +1182,24 @@ full-width: true
       var list = topicCards().slice().sort(function (a, b) {
         return dueTime(a) - dueTime(b);
       });
+      var searchValue = normalizeAnswer(cardListSearchInput.value);
       if (!list.length) {
         var empty = document.createElement("p");
         empty.className = "flashcard-table-empty";
         empty.textContent = "Topic này chưa có flashcard.";
         cardListPanel.appendChild(empty);
+        return;
+      }
+      if (searchValue) {
+        list = list.filter(function (card) {
+          return normalizeAnswer(card.answer).indexOf(searchValue) !== -1;
+        });
+      }
+      if (!list.length) {
+        var noResult = document.createElement("p");
+        noResult.className = "flashcard-table-empty";
+        noResult.textContent = "Không tìm thấy từ phù hợp.";
+        cardListPanel.appendChild(noResult);
         return;
       }
 
@@ -1537,7 +1583,7 @@ full-width: true
       renderCardList();
       cardListModal.classList.add("is-open");
       cardListModal.removeAttribute("aria-hidden");
-      closeCardListButton.focus();
+      cardListSearchInput.focus();
     }
 
     function closeCardList() {
@@ -1579,6 +1625,7 @@ full-width: true
     resetSrsButton.addEventListener("click", resetSrsSettings);
     resetAllButton.addEventListener("click", resetAllData);
     toggleCardListButton.addEventListener("click", openCardList);
+    cardListSearchInput.addEventListener("input", renderCardList);
     deleteTopicSelect.addEventListener("change", updateDeleteTopicState);
     studyTopicSelect.addEventListener("change", changeStudyTopic);
     activeTopicLabel.addEventListener("click", switchToNextTopic);
