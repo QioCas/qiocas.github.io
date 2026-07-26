@@ -589,6 +589,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
     var currentCardId = "";
     var lastSeenCardId = "";
     var answerRevealed = false;
+    var currentAttemptFailed = false;
     var debugMode = false;
     var nextCardTimer = null;
     var lastFocusedElement = null;
@@ -793,6 +794,11 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       nextCardTimer = null;
     }
 
+    function resetAttemptState() {
+      answerRevealed = false;
+      currentAttemptFailed = false;
+    }
+
     function writeStorage(key, value) {
       try {
         window.localStorage.setItem(key, JSON.stringify(value));
@@ -914,6 +920,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
         "wrongCount = " + stats.wrongCount,
         "recentWrong = " + stats.recentWrong,
         "correctStreak = " + stats.correctStreak,
+        "currentAttemptFailed = " + currentAttemptFailed,
         "",
         "weight = baseWeight",
         "       + wrongCount × wrongWeight",
@@ -1146,7 +1153,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       settings.activeTopic = selectedTopic;
       currentCardId = "";
       lastSeenCardId = "";
-      answerRevealed = false;
+      resetAttemptState();
       saveAll();
       clearForm();
       setCreateStatus("Đã thêm flashcard.");
@@ -1173,7 +1180,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       newTopicInput.value = "";
       currentCardId = "";
       lastSeenCardId = "";
-      answerRevealed = false;
+      resetAttemptState();
       saveAll();
       setStatus("Đã thêm topic.");
       render();
@@ -1205,7 +1212,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       settings.lastTopic = settings.activeTopic;
       currentCardId = "";
       lastSeenCardId = "";
-      answerRevealed = false;
+      resetAttemptState();
       saveAll();
       setStatus("Đã xóa topic.");
       render();
@@ -1229,7 +1236,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
         currentCardId = "";
         lastSeenCardId = "";
       }
-      answerRevealed = false;
+      resetAttemptState();
       answerInput.value = "";
       saveAll();
       setStatus("Đã xóa thẻ.");
@@ -1271,7 +1278,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       settings.activeTopic = normalizeTopic(studyTopicSelect.value);
       currentCardId = "";
       lastSeenCardId = "";
-      answerRevealed = false;
+      resetAttemptState();
       saveAll();
       render();
     }
@@ -1284,7 +1291,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       settings.activeTopic = settings.topics[nextTopicIndex];
       currentCardId = "";
       lastSeenCardId = "";
-      answerRevealed = false;
+      resetAttemptState();
       saveAll();
       render();
     }
@@ -1297,12 +1304,14 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       var nowMs = Date.now();
       card.stats = normalizeStats(card.stats, nowMs);
       if (normalizeAnswer(answerInput.value) === normalizeAnswer(card.answer)) {
-        card.stats.correctCount += 1;
-        card.stats.correctStreak += 1;
-        card.stats.recentWrong = Math.max(0, card.stats.recentWrong - 1);
-        card.stats.lastAnsweredAt = new Date(nowMs).toISOString();
-        card.stats.dueAt = new Date(nowMs + parseDurationMs(settings.srs.correctDelay, defaultSrs.correctDelay) * Math.pow(settings.srs.correctGrowth, card.stats.correctStreak - 1)).toISOString();
-        saveAll();
+        if (!currentAttemptFailed) {
+          card.stats.correctCount += 1;
+          card.stats.correctStreak += 1;
+          card.stats.recentWrong = Math.max(0, card.stats.recentWrong - 1);
+          card.stats.lastAnsweredAt = new Date(nowMs).toISOString();
+          card.stats.dueAt = new Date(nowMs + parseDurationMs(settings.srs.correctDelay, defaultSrs.correctDelay) * Math.pow(settings.srs.correctGrowth, card.stats.correctStreak - 1)).toISOString();
+          saveAll();
+        }
         answerRevealed = false;
         setFeedback("correct", "Đáp án chính xác");
         nextCardTimer = window.setTimeout(function () {
@@ -1311,12 +1320,15 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
         }, 700);
         return;
       }
-      card.stats.wrongCount += 1;
-      card.stats.recentWrong += 1;
-      card.stats.correctStreak = 0;
-      card.stats.lastAnsweredAt = new Date(nowMs).toISOString();
-      card.stats.dueAt = new Date(nowMs + parseDurationMs(settings.srs.wrongDelay, defaultSrs.wrongDelay)).toISOString();
-      saveAll();
+      if (!currentAttemptFailed) {
+        card.stats.wrongCount += 1;
+        card.stats.recentWrong += 1;
+        card.stats.correctStreak = 0;
+        card.stats.lastAnsweredAt = new Date(nowMs).toISOString();
+        card.stats.dueAt = new Date(nowMs + parseDurationMs(settings.srs.wrongDelay, defaultSrs.wrongDelay)).toISOString();
+        currentAttemptFailed = true;
+        saveAll();
+      }
       answerRevealed = true;
       renderCard();
       answerInput.select();
@@ -1328,7 +1340,7 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       clearNextCardTimer();
       currentCardId = pickRandomCardId(list, currentCardId);
       lastSeenCardId = "";
-      answerRevealed = false;
+      resetAttemptState();
       answerInput.value = "";
       renderCard();
       answerInput.focus();
