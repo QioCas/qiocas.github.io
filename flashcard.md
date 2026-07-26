@@ -968,7 +968,11 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
         return dueTime(card) <= nowMs;
       });
       if (!pool.length) {
-        pool = list.slice().sort(function (a, b) {
+        pool = list.filter(function (card) {
+          return card.id !== previousId;
+        });
+        if (!pool.length) pool = list.slice();
+        pool = pool.sort(function (a, b) {
           return dueTime(a) - dueTime(b);
         }).slice(0, 1);
       }
@@ -976,6 +980,13 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
         pool = pool.filter(function (card) {
           return card.id !== previousId;
         });
+      }
+      if (pool.length === 1 && pool[0].id === previousId && list.length > 1) {
+        pool = list.filter(function (card) {
+          return card.id !== previousId;
+        }).sort(function (a, b) {
+          return dueTime(a) - dueTime(b);
+        }).slice(0, 1);
       }
       if (pool.length > 1) {
         var seenCooldownMs = parseDurationMs(settings.srs.wrongDelay, defaultSrs.wrongDelay);
@@ -1332,10 +1343,6 @@ weight = clamp(weight, minWeight, maxWeight)</pre>
       answerRevealed = true;
       renderCard();
       answerInput.select();
-      nextCardTimer = window.setTimeout(function () {
-        showRandomCard();
-        nextCardTimer = null;
-      }, 1500);
     }
 
     function showRandomCard() {
