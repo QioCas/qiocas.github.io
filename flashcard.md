@@ -215,6 +215,18 @@ full-width: true
     display: grid;
   }
 
+  .flashcard-floating-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2100;
+    display: none;
+    pointer-events: none;
+  }
+
+  .flashcard-floating-modal.is-open {
+    display: block;
+  }
+
   .flashcard-settings {
     width: min(720px, 100%);
     max-height: min(760px, calc(100vh - 2rem));
@@ -402,6 +414,7 @@ full-width: true
 
   .flashcard-table tbody tr {
     background: transparent;
+    cursor: pointer;
   }
 
   .flashcard-table tbody tr:nth-child(even) {
@@ -464,19 +477,6 @@ full-width: true
     outline: none;
   }
 
-  .flashcard-card-editor {
-    display: grid;
-    gap: 0.85rem;
-    border: 1px solid var(--flash-border);
-    border-radius: 6px;
-    background: rgba(0, 0, 0, 0.12);
-    padding: 0.9rem;
-  }
-
-  .flashcard-card-editor[hidden] {
-    display: none;
-  }
-
   .flashcard-table-word {
     border: 0;
     background: transparent;
@@ -493,6 +493,36 @@ full-width: true
     outline: none;
     text-decoration: underline;
     text-underline-offset: 0.2em;
+  }
+
+  .flashcard-card-editor {
+    position: absolute;
+    top: min(18vh, 140px);
+    left: 50%;
+    display: grid;
+    gap: 0;
+    width: min(560px, calc(100vw - 2rem));
+    border: 1px solid var(--flash-border);
+    border-radius: 8px;
+    background: var(--flash-surface);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+    pointer-events: auto;
+    transform: translateX(-50%);
+  }
+
+  .flashcard-card-editor.is-dragging {
+    user-select: none;
+  }
+
+  .flashcard-card-editor-body {
+    display: grid;
+    gap: 0.85rem;
+    padding: 1rem;
+  }
+
+  .flashcard-drag-handle {
+    cursor: move;
+    touch-action: none;
   }
 
   @media (max-width: 640px) {
@@ -645,27 +675,36 @@ full-width: true
           <label for="flashcard-card-list-search">Search từ</label>
           <input id="flashcard-card-list-search" type="search" autocomplete="off" placeholder="Nhập từ cần tìm">
         </div>
-        <form class="flashcard-card-editor" id="flashcard-card-editor" hidden>
-          <div class="flashcard-grid">
-            <div class="flashcard-field full">
-              <label for="flashcard-edit-prompt">Câu gợi ý</label>
-              <textarea id="flashcard-edit-prompt" required></textarea>
-            </div>
-            <div class="flashcard-field full">
-              <label for="flashcard-edit-answer">Đáp án</label>
-              <textarea id="flashcard-edit-answer" required></textarea>
-            </div>
-          </div>
-          <div class="flashcard-actions">
-            <button class="flashcard-button primary" type="submit">Lưu thẻ</button>
-            <button class="flashcard-button danger" id="flashcard-delete-selected-card" type="button">Xóa thẻ</button>
-            <button class="flashcard-button" id="flashcard-close-card-editor" type="button">Đóng chi tiết</button>
-          </div>
-          <p class="flashcard-status" id="flashcard-card-list-status" role="status" aria-live="polite"></p>
-        </form>
         <div class="flashcard-table-wrap" id="flashcard-card-list-panel"></div>
       </div>
     </section>
+  </div>
+
+  <div class="flashcard-floating-modal" id="flashcard-card-editor-modal" aria-hidden="true">
+    <form class="flashcard-card-editor" id="flashcard-card-editor" role="dialog" aria-modal="false" aria-labelledby="flashcard-card-editor-title">
+      <header class="flashcard-settings-header flashcard-drag-handle" id="flashcard-card-editor-handle">
+        <h2 class="flashcard-settings-title" id="flashcard-card-editor-title">Chỉnh sửa thẻ</h2>
+        <button class="flashcard-button icon" id="flashcard-close-card-editor" type="button" aria-label="Đóng chỉnh sửa">&times;</button>
+      </header>
+
+      <div class="flashcard-card-editor-body">
+        <div class="flashcard-grid">
+          <div class="flashcard-field full">
+            <label for="flashcard-edit-prompt">Câu gợi ý</label>
+            <textarea id="flashcard-edit-prompt" required></textarea>
+          </div>
+          <div class="flashcard-field full">
+            <label for="flashcard-edit-answer">Đáp án</label>
+            <textarea id="flashcard-edit-answer" required></textarea>
+          </div>
+        </div>
+        <div class="flashcard-actions">
+          <button class="flashcard-button primary" type="submit">Lưu thẻ</button>
+          <button class="flashcard-button danger" id="flashcard-delete-selected-card" type="button">Xóa thẻ</button>
+        </div>
+        <p class="flashcard-status" id="flashcard-card-list-status" role="status" aria-live="polite"></p>
+      </div>
+    </form>
   </div>
 
   <div class="flashcard-modal" id="flashcard-create-modal" role="dialog" aria-modal="true" aria-labelledby="flashcard-create-title">
@@ -749,6 +788,7 @@ full-width: true
     var activeTopicLabel = document.getElementById("flashcard-active-topic");
     var settingsModal = document.getElementById("flashcard-settings-modal");
     var cardListModal = document.getElementById("flashcard-card-list-modal");
+    var cardEditorModal = document.getElementById("flashcard-card-editor-modal");
     var createModal = document.getElementById("flashcard-create-modal");
     var closeSettingsButton = document.getElementById("flashcard-close-settings");
     var closeCardListButton = document.getElementById("flashcard-close-card-list");
@@ -772,6 +812,7 @@ full-width: true
     var toggleCardListButton = document.getElementById("flashcard-toggle-card-list");
     var cardListSearchInput = document.getElementById("flashcard-card-list-search");
     var cardEditor = document.getElementById("flashcard-card-editor");
+    var cardEditorHandle = document.getElementById("flashcard-card-editor-handle");
     var editPromptInput = document.getElementById("flashcard-edit-prompt");
     var editAnswerInput = document.getElementById("flashcard-edit-answer");
     var deleteSelectedCardButton = document.getElementById("flashcard-delete-selected-card");
@@ -782,6 +823,8 @@ full-width: true
     var createStatus = document.getElementById("flashcard-create-status");
     var selectedCardId = "";
     var cardListNowMs = 0;
+    var editorPosition = null;
+    var editorDrag = null;
 
     function createId() {
       if (window.crypto && typeof window.crypto.randomUUID === "function") {
@@ -1219,11 +1262,14 @@ full-width: true
       selectedCardId = cardId;
       setCardListStatus("");
       renderCardList();
+      openCardEditor();
       editPromptInput.focus();
     }
 
     function closeCardEditor() {
       selectedCardId = "";
+      cardEditorModal.classList.remove("is-open");
+      cardEditorModal.setAttribute("aria-hidden", "true");
       renderCardList();
     }
 
@@ -1247,7 +1293,6 @@ full-width: true
 
     function renderCardEditor() {
       var card = selectedCard();
-      cardEditor.hidden = !card;
       if (!card) {
         editPromptInput.value = "";
         editAnswerInput.value = "";
@@ -1256,6 +1301,61 @@ full-width: true
       }
       editPromptInput.value = card.prompt;
       editAnswerInput.value = card.answer;
+    }
+
+    function openCardEditor() {
+      renderCardEditor();
+      if (!selectedCard()) return;
+      cardEditorModal.classList.add("is-open");
+      cardEditorModal.removeAttribute("aria-hidden");
+      placeCardEditor();
+    }
+
+    function placeCardEditor() {
+      var rect = cardEditor.getBoundingClientRect();
+      if (!editorPosition) {
+        editorPosition = {
+          x: Math.max(16, Math.round((window.innerWidth - rect.width) / 2)),
+          y: Math.max(16, Math.round(window.innerHeight * 0.16))
+        };
+      }
+      editorPosition.x = Math.min(Math.max(8, editorPosition.x), Math.max(8, window.innerWidth - rect.width - 8));
+      editorPosition.y = Math.min(Math.max(8, editorPosition.y), Math.max(8, window.innerHeight - rect.height - 8));
+      cardEditor.style.left = editorPosition.x + "px";
+      cardEditor.style.top = editorPosition.y + "px";
+      cardEditor.style.transform = "none";
+    }
+
+    function moveCardEditor(clientX, clientY) {
+      if (!editorDrag) return;
+      var rect = cardEditor.getBoundingClientRect();
+      editorPosition = {
+        x: clientX - editorDrag.offsetX,
+        y: clientY - editorDrag.offsetY
+      };
+      editorPosition.x = Math.min(Math.max(8, editorPosition.x), Math.max(8, window.innerWidth - rect.width - 8));
+      editorPosition.y = Math.min(Math.max(8, editorPosition.y), Math.max(8, window.innerHeight - rect.height - 8));
+      cardEditor.style.left = editorPosition.x + "px";
+      cardEditor.style.top = editorPosition.y + "px";
+      cardEditor.style.transform = "none";
+    }
+
+    function stopCardEditorDrag() {
+      if (!editorDrag) return;
+      cardEditor.classList.remove("is-dragging");
+      editorDrag = null;
+    }
+
+    function startCardEditorDrag(event) {
+      if (event.target.closest("button")) return;
+      var rect = cardEditor.getBoundingClientRect();
+      editorDrag = {
+        offsetX: event.clientX - rect.left,
+        offsetY: event.clientY - rect.top
+      };
+      cardEditor.classList.add("is-dragging");
+      cardEditorHandle.setPointerCapture(event.pointerId);
+      event.preventDefault();
     }
 
     function renderSrsControls() {
@@ -1306,6 +1406,7 @@ full-width: true
         var dueCell = document.createElement("td");
         var wordButton = document.createElement("button");
         var dueAt = card.stats && card.stats.dueAt;
+        row.dataset.cardId = card.id;
         if (card.id === selectedCardId) row.className = "is-selected";
         wordButton.className = "flashcard-table-word";
         wordButton.type = "button";
@@ -1509,6 +1610,8 @@ full-width: true
       saveAll();
       render();
       renderCardList();
+      cardEditorModal.classList.remove("is-open");
+      cardEditorModal.setAttribute("aria-hidden", "true");
       setCardListStatus("Đã xóa thẻ.");
     }
 
@@ -1686,6 +1789,7 @@ full-width: true
     }
 
     function closeCardList() {
+      closeCardEditor();
       cardListModal.classList.remove("is-open");
       cardListModal.setAttribute("aria-hidden", "true");
       cardListNowMs = 0;
@@ -1718,6 +1822,12 @@ full-width: true
     form.addEventListener("submit", addCard);
     answerForm.addEventListener("submit", checkAnswer);
     cardEditor.addEventListener("submit", saveCardEdit);
+    cardEditorHandle.addEventListener("pointerdown", startCardEditorDrag);
+    cardEditorHandle.addEventListener("pointermove", function (event) {
+      moveCardEditor(event.clientX, event.clientY);
+    });
+    cardEditorHandle.addEventListener("pointerup", stopCardEditorDrag);
+    cardEditorHandle.addEventListener("pointercancel", stopCardEditorDrag);
     clearFormButton.addEventListener("click", clearForm);
     addTopicButton.addEventListener("click", addTopic);
     deleteTopicButton.addEventListener("click", deleteTopic);
@@ -1749,9 +1859,9 @@ full-width: true
       dropDueByRatio(Number(button.dataset.ratio));
     });
     cardListPanel.addEventListener("click", function (event) {
-      var button = event.target.closest(".flashcard-table-word");
-      if (!button) return;
-      selectCardForEdit(button.dataset.cardId);
+      var row = event.target.closest("tbody tr[data-card-id]");
+      if (!row) return;
+      selectCardForEdit(row.dataset.cardId);
     });
 
     document.addEventListener("keydown", function (event) {
@@ -1798,6 +1908,10 @@ full-width: true
         }
         return;
       }
+      if (event.key === "Escape" && cardEditorModal.classList.contains("is-open")) {
+        closeCardEditor();
+        return;
+      }
       if (event.key === "Escape" && cardListModal.classList.contains("is-open")) {
         closeCardList();
         return;
@@ -1817,6 +1931,7 @@ full-width: true
 
     settingsModal.setAttribute("aria-hidden", "true");
     cardListModal.setAttribute("aria-hidden", "true");
+    cardEditorModal.setAttribute("aria-hidden", "true");
     createModal.setAttribute("aria-hidden", "true");
     loadSettings();
     cards = loadCards();
