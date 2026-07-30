@@ -596,19 +596,6 @@ full-width: true
           </div>
         </section>
 
-        <section class="flashcard-section" aria-labelledby="flashcard-card-settings-title">
-          <h3 id="flashcard-card-settings-title">Quản lý thẻ</h3>
-          <div class="flashcard-grid">
-            <div class="flashcard-field full">
-              <label for="flashcard-delete-card">Thẻ cần xóa</label>
-              <select id="flashcard-delete-card"></select>
-            </div>
-          </div>
-          <div class="flashcard-actions">
-            <button class="flashcard-button danger" id="flashcard-delete-card-button" type="button">Xóa thẻ</button>
-          </div>
-        </section>
-
         <section class="flashcard-section" aria-labelledby="flashcard-srs-settings-title">
           <h3 id="flashcard-srs-settings-title">SRS</h3>
           <div class="flashcard-grid">
@@ -671,6 +658,7 @@ full-width: true
           </div>
           <div class="flashcard-actions">
             <button class="flashcard-button primary" type="submit">Lưu thẻ</button>
+            <button class="flashcard-button danger" id="flashcard-delete-selected-card" type="button">Xóa thẻ</button>
             <button class="flashcard-button" id="flashcard-close-card-editor" type="button">Đóng chi tiết</button>
           </div>
           <p class="flashcard-status" id="flashcard-card-list-status" role="status" aria-live="polite"></p>
@@ -775,8 +763,6 @@ full-width: true
     var addTopicButton = document.getElementById("flashcard-add-topic");
     var deleteTopicSelect = document.getElementById("flashcard-delete-topic");
     var deleteTopicButton = document.getElementById("flashcard-delete-topic-button");
-    var deleteCardSelect = document.getElementById("flashcard-delete-card");
-    var deleteCardButton = document.getElementById("flashcard-delete-card-button");
     var newDelayInput = document.getElementById("flashcard-new-delay");
     var wrongDelayInput = document.getElementById("flashcard-wrong-delay");
     var correctDelayInput = document.getElementById("flashcard-correct-delay");
@@ -788,6 +774,7 @@ full-width: true
     var cardEditor = document.getElementById("flashcard-card-editor");
     var editPromptInput = document.getElementById("flashcard-edit-prompt");
     var editAnswerInput = document.getElementById("flashcard-edit-answer");
+    var deleteSelectedCardButton = document.getElementById("flashcard-delete-selected-card");
     var closeCardEditorButton = document.getElementById("flashcard-close-card-editor");
     var cardListStatus = document.getElementById("flashcard-card-list-status");
     var cardListPanel = document.getElementById("flashcard-card-list-panel");
@@ -1253,7 +1240,6 @@ full-width: true
       card.prompt = prompt;
       card.answer = answer;
       saveAll();
-      renderDeleteCardSelect();
       renderCardList();
       renderCard();
       setCardListStatus("Đã lưu thẻ.");
@@ -1270,19 +1256,6 @@ full-width: true
       }
       editPromptInput.value = card.prompt;
       editAnswerInput.value = card.answer;
-    }
-
-    function renderDeleteCardSelect() {
-      var list = topicCards();
-      deleteCardSelect.innerHTML = "";
-      list.forEach(function (card) {
-        var option = document.createElement("option");
-        option.value = card.id;
-        option.textContent = shortenText(card.prompt);
-        if (card.id === currentCardId) option.selected = true;
-        deleteCardSelect.appendChild(option);
-      });
-      deleteCardButton.disabled = !list.length;
     }
 
     function renderSrsControls() {
@@ -1356,7 +1329,6 @@ full-width: true
       fillSelect(studyTopicSelect, settings.activeTopic);
       fillSelect(cardTopicSelect, settings.lastTopic);
       fillSelect(deleteTopicSelect, settings.activeTopic);
-      renderDeleteCardSelect();
       renderSrsControls();
       updateDeleteTopicState();
     }
@@ -1516,14 +1488,11 @@ full-width: true
       render();
     }
 
-    function deleteCard() {
+    function deleteSelectedCard() {
       clearNextCardTimer();
-      var cardId = deleteCardSelect.value;
-      if (!cardId) return;
-      var card = cards.find(function (item) {
-        return item.id === cardId;
-      });
+      var card = selectedCard();
       if (!card) return;
+      var cardId = card.id;
       var message = 'Xóa thẻ "' + shortenText(card.prompt) + '"?';
       if (!window.confirm(message)) return;
 
@@ -1538,8 +1507,9 @@ full-width: true
       resetAttemptState();
       answerInput.value = "";
       saveAll();
-      setStatus("Đã xóa thẻ.");
       render();
+      renderCardList();
+      setCardListStatus("Đã xóa thẻ.");
     }
 
     function collectSrsControls() {
@@ -1751,7 +1721,7 @@ full-width: true
     clearFormButton.addEventListener("click", clearForm);
     addTopicButton.addEventListener("click", addTopic);
     deleteTopicButton.addEventListener("click", deleteTopic);
-    deleteCardButton.addEventListener("click", deleteCard);
+    deleteSelectedCardButton.addEventListener("click", deleteSelectedCard);
     saveSrsButton.addEventListener("click", saveSrsSettings);
     resetSrsButton.addEventListener("click", resetSrsSettings);
     resetAllButton.addEventListener("click", resetAllData);
