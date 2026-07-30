@@ -626,34 +626,6 @@ full-width: true
           </div>
         </section>
 
-        <section class="flashcard-section" aria-labelledby="flashcard-srs-settings-title">
-          <h3 id="flashcard-srs-settings-title">SRS</h3>
-          <div class="flashcard-grid">
-            <div class="flashcard-field">
-              <label for="flashcard-new-delay">newDelay</label>
-              <input id="flashcard-new-delay" type="text" inputmode="text" placeholder="10m">
-            </div>
-            <div class="flashcard-field">
-              <label for="flashcard-wrong-delay">wrongDelay</label>
-              <input id="flashcard-wrong-delay" type="text" inputmode="text" placeholder="2m">
-            </div>
-            <div class="flashcard-field">
-              <label for="flashcard-correct-delay">correctDelay</label>
-              <input id="flashcard-correct-delay" type="text" inputmode="text" placeholder="30m">
-            </div>
-          </div>
-          <div class="flashcard-actions">
-            <button class="flashcard-button primary" id="flashcard-save-srs" type="button">Lưu SRS</button>
-            <button class="flashcard-button" id="flashcard-reset-srs" type="button">Reset delay default</button>
-          </div>
-        </section>
-
-        <section class="flashcard-section" aria-labelledby="flashcard-card-table-title">
-          <h3 id="flashcard-card-table-title">Bảng thẻ</h3>
-          <div class="flashcard-actions">
-            <button class="flashcard-button" id="flashcard-toggle-card-list" type="button">Mở bảng</button>
-          </div>
-        </section>
       </div>
 
       <footer class="flashcard-settings-footer">
@@ -803,13 +775,7 @@ full-width: true
     var addTopicButton = document.getElementById("flashcard-add-topic");
     var deleteTopicSelect = document.getElementById("flashcard-delete-topic");
     var deleteTopicButton = document.getElementById("flashcard-delete-topic-button");
-    var newDelayInput = document.getElementById("flashcard-new-delay");
-    var wrongDelayInput = document.getElementById("flashcard-wrong-delay");
-    var correctDelayInput = document.getElementById("flashcard-correct-delay");
-    var saveSrsButton = document.getElementById("flashcard-save-srs");
-    var resetSrsButton = document.getElementById("flashcard-reset-srs");
     var resetAllButton = document.getElementById("flashcard-reset-all");
-    var toggleCardListButton = document.getElementById("flashcard-toggle-card-list");
     var cardListSearchInput = document.getElementById("flashcard-card-list-search");
     var cardEditor = document.getElementById("flashcard-card-editor");
     var cardEditorHandle = document.getElementById("flashcard-card-editor-handle");
@@ -1358,12 +1324,6 @@ full-width: true
       event.preventDefault();
     }
 
-    function renderSrsControls() {
-      newDelayInput.value = settings.srs.newDelay;
-      wrongDelayInput.value = settings.srs.wrongDelay;
-      correctDelayInput.value = settings.srs.correctDelay;
-    }
-
     function renderCardList() {
       cardListPanel.innerHTML = "";
       renderCardEditor();
@@ -1430,7 +1390,6 @@ full-width: true
       fillSelect(studyTopicSelect, settings.activeTopic);
       fillSelect(cardTopicSelect, settings.lastTopic);
       fillSelect(deleteTopicSelect, settings.activeTopic);
-      renderSrsControls();
       updateDeleteTopicState();
     }
 
@@ -1613,36 +1572,6 @@ full-width: true
       cardEditorModal.classList.remove("is-open");
       cardEditorModal.setAttribute("aria-hidden", "true");
       setCardListStatus("Đã xóa thẻ.");
-    }
-
-    function collectSrsControls() {
-      return normalizeSrsConfig(Object.assign({}, settings.srs, {
-        newDelay: newDelayInput.value,
-        wrongDelay: wrongDelayInput.value,
-        correctDelay: correctDelayInput.value
-      }));
-    }
-
-    function saveSrsSettings() {
-      settings.srs = collectSrsControls();
-      saveAll();
-      renderSrsControls();
-      cardListNowMs = Date.now();
-      renderCardList();
-      setStatus("Đã lưu delay SRS.");
-    }
-
-    function resetSrsSettings() {
-      settings.srs = normalizeSrsConfig(Object.assign({}, settings.srs, {
-        newDelay: defaultSrs.newDelay,
-        wrongDelay: defaultSrs.wrongDelay,
-        correctDelay: defaultSrs.correctDelay
-      }));
-      saveAll();
-      renderSrsControls();
-      cardListNowMs = Date.now();
-      renderCardList();
-      setStatus("Đã reset delay về default.");
     }
 
     function resetAllData() {
@@ -1832,10 +1761,7 @@ full-width: true
     addTopicButton.addEventListener("click", addTopic);
     deleteTopicButton.addEventListener("click", deleteTopic);
     deleteSelectedCardButton.addEventListener("click", deleteSelectedCard);
-    saveSrsButton.addEventListener("click", saveSrsSettings);
-    resetSrsButton.addEventListener("click", resetSrsSettings);
     resetAllButton.addEventListener("click", resetAllData);
-    toggleCardListButton.addEventListener("click", openCardList);
     cardListSearchInput.addEventListener("input", renderCardList);
     closeCardEditorButton.addEventListener("click", closeCardEditor);
     deleteTopicSelect.addEventListener("change", updateDeleteTopicState);
